@@ -1900,7 +1900,7 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
 
   /// 予約がキャンセル可能かどうかを判定（予約システム使用時）
   bool _canCancelReservation(Experiment experiment) {
-    // 実験に対する予約を検索
+    // 実験に対する確定済み予約を検索
     final reservation = _userReservations.firstWhere(
       (r) => r.experimentId == experiment.id && r.status == ReservationStatus.confirmed,
       orElse: () => ExperimentReservation(
@@ -1912,31 +1912,38 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
         status: ReservationStatus.cancelled,
       ),
     );
-    
+
     if (reservation.id.isEmpty) {
       // 予約システムを使っていない場合は、通常の参加キャンセル判定を使用
       return _canCancelParticipation(experiment);
     }
-    
-    // TODO: スロット情報を取得してより正確な判定を行う
+
+    // 予約キャンセル可否を判定
     return reservation.canCancel(experiment);
   }
 
   /// キャンセル確認ダイアログを表示
   Future<void> _showCancelConfirmDialog(Experiment experiment) async {
     final TextEditingController reasonController = TextEditingController();
-    
+
+    // 予約があるか確認
+    final hasReservation = _userReservations.any(
+      (r) => r.experimentId == experiment.id && r.status == ReservationStatus.confirmed,
+    );
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('予約のキャンセル'),
+        title: Text(hasReservation ? '予約のキャンセル' : '参加のキャンセル'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'この実験の予約をキャンセルしますか？',
-              style: TextStyle(fontSize: 16),
+            Text(
+              hasReservation
+                ? 'この実験の予約をキャンセルしますか？'
+                : 'この実験への参加をキャンセルしますか？',
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
             TextField(

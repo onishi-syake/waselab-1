@@ -227,11 +227,15 @@ class ReservationService {
     return _firestore
         .collection('experiment_reservations')
         .where('userId', isEqualTo: userId)
-        .orderBy('reservedAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ExperimentReservation.fromFirestore(doc))
-            .toList());
+        .map((snapshot) {
+          final reservations = snapshot.docs
+              .map((doc) => ExperimentReservation.fromFirestore(doc))
+              .toList();
+          // クライアント側でソート（インデックス不要）
+          reservations.sort((a, b) => b.reservedAt.compareTo(a.reservedAt));
+          return reservations;
+        });
   }
 
   /// 実験の予約を取得

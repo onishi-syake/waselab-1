@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -53,13 +54,119 @@ class _ExperimentDetailScreenState extends State<ExperimentDetailScreen> {
   String? _experimenterName;
   ExperimentReservation? _currentUserReservation;
   ExperimentSlot? _reservedSlot;
+  bool _isInitializing = true;  // 初期化中フラグを追加
+
+  // 一時的な予約キャッシュ（画面遷移時のデータ保持用）
+  static final Map<String, ExperimentReservation> _reservationCache = {};
+  static final Map<String, ExperimentSlot> _slotCache = {};
+
+  // 予約情報のリアルタイム監視用
+  StreamSubscription<List<ExperimentReservation>>? _reservationSubscription;
 
   @override
   void initState() {
     super.initState();
-    _checkParticipation();
-    _loadExperimenterName();
-    _loadUserReservation();
+    _initializeScreen();
+    _startReservationListener(); // リアルタイム監視開始
+  }
+
+  @override
+  void didUpdateWidget(ExperimentDetailScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 異なる実験が渡された場合、または他画面から戻ってきた場合に再初期化
+    if (oldWidget.experiment.id != widget.experiment.id) {
+      print('[DEBUG] didUpdateWidget: 実験IDが変更されました。再初期化します。');
+      _initializeScreen();
+      _startReservationListener();
+    } else {
+      // 同じ実験でも、予約情報を再確認
+      print('[DEBUG] didUpdateWidget: 同じ実験です。予約情報を再確認します。');
+      _loadUserReservation();
+    }
+  }
+
+  @override
+  void dispose() {
+    _reservationSubscription?.cancel();
+    super.dispose();
+  }
+
+  /// 予約情報のリアルタイム監視を開始
+  void _startReservationListener() {
+    _reservationSubscription?.cancel(); // 既存のサブスクリプションをキャンセル
+
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    print('[DEBUG] リアルタイム監視を開始: user_id=${user.uid}, experiment_id=${widget.experiment.id}');
+
+    // リアルタイムで予約情報を監視
+    _reservationSubscription = _reservationService
+        .getUserReservations(user.uid)
+        .listen((reservations) async {
+      print('[DEBUG] リアルタイム更新: 予約数=${reservations.length}');
+
+      // この実験の予約を探す
+      ExperimentReservation? reservation;
+      try {
+        reservation = reservations.firstWhere(
+          (r) => r.experimentId == widget.experiment.id &&
+                 r.status == ReservationStatus.confirmed,
+        );
+        print('[DEBUG] リアルタイム: 予約発見 id=${reservation.id}');
+      } catch (e) {
+        print('[DEBUG] リアルタイム: 予約なし');
+      }
+
+      // 予約が見つかった場合、スロット情報も取得
+      if (reservation != null && mounted) {
+        ExperimentSlot? slot;
+        if (reservation.slotId.isNotEmpty) {
+          try {
+            slot = await _reservationService.getSlotById(reservation.slotId);
+            print('[DEBUG] リアルタイム: スロット取得 id=${slot.id}');
+          } catch (e) {
+            print('[DEBUG] リアルタイム: スロット取得失敗');
+          }
+        }
+
+        // UIを更新
+        if (mounted) {
+          setState(() {
+            _currentUserReservation = reservation;
+            _reservedSlot = slot;
+            print('[DEBUG] リアルタイム: UI更新完了');
+          });
+        }
+      } else if (reservation == null && mounted) {
+        // 予約がない場合もUIを更新
+        setState(() {
+          _currentUserReservation = null;
+          _reservedSlot = null;
+          print('[DEBUG] リアルタイム: 予約なし - UI更新完了');
+        });
+      }
+    });
+  }
+
+  /// 画面の初期化処理（すべてのデータを読み込んでから画面を表示）
+  Future<void> _initializeScreen() async {
+    try {
+      // 並列で読み込みを実行
+      await Future.wait([
+        _checkParticipation(),
+        _loadExperimenterName(),
+        _loadUserReservation(),
+      ]);
+    } catch (e) {
+      // エラーが発生しても画面は表示する
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isInitializing = false;
+        });
+      }
+    }
   }
 
   /// 実験者の名前を取得
@@ -88,45 +195,93 @@ class _ExperimentDetailScreenState extends State<ExperimentDetailScreen> {
     }
   }
 
-  /// ユーザーの予約情報を取得
+  /// ユーザーの予約情報を取得（リトライロジック付き）
   Future<void> _loadUserReservation() async {
+    print('[DEBUG] _loadUserReservation開始: experiment_id=${widget.experiment.id}');
     try {
       final user = _auth.currentUser;
-      if (user != null) {
+      if (user == null) {
+        print('[DEBUG] ユーザーがログインしていません');
+        return;
+      }
+
+      // キャッシュチェック
+      final cacheKey = '${user.uid}_${widget.experiment.id}';
+      if (_reservationCache.containsKey(cacheKey)) {
+        print('[DEBUG] キャッシュから予約情報を取得');
+        setState(() {
+          _currentUserReservation = _reservationCache[cacheKey];
+          _reservedSlot = _slotCache[cacheKey];
+        });
+      }
+
+      // Firestoreから取得（リトライ付き）
+      ExperimentReservation? reservation;
+      int retryCount = 0;
+      const maxRetries = 3;
+      const retryDelay = Duration(milliseconds: 500);
+
+      while (retryCount < maxRetries && reservation == null) {
+        if (retryCount > 0) {
+          print('[DEBUG] リトライ ${retryCount}/${maxRetries}');
+          await Future.delayed(retryDelay);
+        }
+
         final reservationsStream = _reservationService.getUserReservations(user.uid);
         final reservations = await reservationsStream.first;
-        
+        print('[DEBUG] 取得した予約数: ${reservations.length}');
+
         // この実験に対する予約を検索
-        final reservation = reservations.firstWhere(
-          (r) => r.experimentId == widget.experiment.id && r.status == ReservationStatus.confirmed,
-          orElse: () => ExperimentReservation(
-            id: '',
-            userId: '',
-            experimentId: '',
-            slotId: '',
-            reservedAt: DateTime.now(),
-            status: ReservationStatus.cancelled,
-          ),
-        );
-        
-        if (reservation.id.isNotEmpty && mounted) {
-          // スロット情報を取得
-          try {
-            final slotDoc = await _reservationService.getSlotById(reservation.slotId);
-            setState(() {
-              _currentUserReservation = reservation;
-              _reservedSlot = slotDoc;
-            });
-          } catch (e) {
-            // スロット情報が取得できない場合は予約情報のみ保持
-            setState(() {
-              _currentUserReservation = reservation;
-            });
-          }
+        try {
+          reservation = reservations.firstWhere(
+            (r) {
+              final match = r.experimentId == widget.experiment.id &&
+                           r.status == ReservationStatus.confirmed;
+              if (match) {
+                print('[DEBUG] 予約が見つかりました: reservation_id=${r.id}');
+              }
+              return match;
+            },
+          );
+        } catch (e) {
+          print('[DEBUG] 予約が見つかりませんでした (試行 ${retryCount + 1})');
+          retryCount++;
         }
       }
+
+      // 予約が存在する場合、スロット情報も取得
+      if (reservation != null && mounted) {
+        ExperimentSlot? slot;
+        // スロットIDが存在する場合のみスロット情報を取得
+        if (reservation.slotId.isNotEmpty) {
+          try {
+            slot = await _reservationService.getSlotById(reservation.slotId);
+            print('[DEBUG] スロット情報を取得: slot_id=${slot.id}');
+          } catch (e) {
+            print('[DEBUG] スロット情報の取得に失敗: $e');
+            slot = null;
+          }
+        }
+
+        // キャッシュと状態を更新
+        _reservationCache[cacheKey] = reservation;
+        if (slot != null) {
+          _slotCache[cacheKey] = slot;
+        }
+
+        setState(() {
+          _currentUserReservation = reservation;
+          _reservedSlot = slot;
+        });
+        print('[DEBUG] 予約情報を設定しました');
+      } else if (reservation == null) {
+        // キャッシュをクリア
+        _reservationCache.remove(cacheKey);
+        _slotCache.remove(cacheKey);
+        print('[DEBUG] 予約が見つかりませんでした');
+      }
     } catch (e) {
-      // 予約情報が取得できなくても実験詳細は表示する
+      print('[DEBUG] エラーが発生しました: $e');
     }
   }
 
@@ -187,6 +342,7 @@ class _ExperimentDetailScreenState extends State<ExperimentDetailScreen> {
     );
 
     if (confirmed == true) {
+      // ダイアログが閉じた後、直接予約処理を実行
       await _makeReservation(slot);
     }
   }
@@ -758,7 +914,7 @@ class _ExperimentDetailScreenState extends State<ExperimentDetailScreen> {
         experimentId: widget.experiment.id,
         slotId: slot.id,
       );
-      
+
       // 初回予約を記録
       if (isFirstReservation) {
         await PreferenceService.recordFirstReservation();
@@ -772,14 +928,34 @@ class _ExperimentDetailScreenState extends State<ExperimentDetailScreen> {
         slotId: slot.id,  // 予約制なのでスロットIDを渡す
       );
 
-      // 参加状態を更新
-      setState(() {
-        _isParticipating = true;
-        _showCalendar = false;
-      });
+      // 作成した予約情報を即座にstateに設定
+      final newReservation = ExperimentReservation(
+        id: reservationId,
+        userId: user.uid,
+        experimentId: widget.experiment.id,
+        slotId: slot.id,
+        reservedAt: DateTime.now(),
+        status: ReservationStatus.confirmed,
+      );
 
-      // 予約情報を再読み込み
-      await _loadUserReservation();
+      // キャッシュに保存
+      final cacheKey = '${user.uid}_${widget.experiment.id}';
+      _reservationCache[cacheKey] = newReservation;
+      _slotCache[cacheKey] = slot;
+      print('[DEBUG] 予約情報をキャッシュに保存: cache_key=$cacheKey');
+
+      // 参加状態と予約情報を更新
+      if (mounted) {
+        setState(() {
+          _isParticipating = true;
+          _showCalendar = false;
+          _currentUserReservation = newReservation;
+          _reservedSlot = slot;
+        });
+      }
+
+      // 注: 予約情報の再読み込みは不要（すでに setState で設定済み）
+      // Firestoreへの書き込みは非同期で行われるが、ローカル状態は即座に更新される
 
       // 旧仕様：Googleカレンダーの自動登録は廃止
       // ユーザーは通知から手動でカレンダーに追加できる
@@ -1086,6 +1262,19 @@ class _ExperimentDetailScreenState extends State<ExperimentDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('[DEBUG] build: _currentUserReservation=${_currentUserReservation?.id}, _reservedSlot=${_reservedSlot?.id}');
+    // 初期化中はローディング表示
+    if (_isInitializing) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('実験詳細'),
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('実験詳細'),
@@ -1684,10 +1873,77 @@ class _ExperimentDetailScreenState extends State<ExperimentDetailScreen> {
               ),
             ],
 
-            // 柔軟なスケジュール調整の場合はカレンダー表示（自分の実験でない場合のみ）
-            if (widget.experiment.allowFlexibleSchedule && 
+            // 予約状態の表示（予約がある場合は最優先で表示）
+            if (_currentUserReservation != null && !widget.isMyExperiment) ...[
+              const SizedBox(height: 16),
+              Card(
+                color: Colors.blue.withValues(alpha: 0.1),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.event_available,
+                            color: Colors.blue[700],
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '予約済み',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue[700],
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_reservedSlot != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          '予約日時: ${_formatDateTime(_reservedSlot!.startTime)}',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ],
+                      if (_currentUserReservation!.canCancel(widget.experiment, slot: _reservedSlot)) ...[
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: _isLoading ? null : _handleCancelReservation,
+                            icon: _isLoading
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : const Icon(Icons.cancel, color: Colors.red),
+                            label: const Text(
+                              '予約をキャンセル',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Colors.red),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
+
+            // 柔軟なスケジュール調整の場合はカレンダー表示（予約がない場合のみ）
+            if (widget.experiment.allowFlexibleSchedule &&
                 !widget.isMyExperiment &&
-                (_auth.currentUser == null || widget.experiment.creatorId != _auth.currentUser!.uid)) ...[
+                (_auth.currentUser == null || widget.experiment.creatorId != _auth.currentUser!.uid) &&
+                _currentUserReservation == null) ...[
               const SizedBox(height: 16),
               // 募集人数上限チェック
               if (widget.experiment.maxParticipants != null &&
@@ -1729,7 +1985,7 @@ class _ExperimentDetailScreenState extends State<ExperimentDetailScreen> {
                     ),
                   ),
                 )
-              else
+              else if (_currentUserReservation == null)  // 予約がない場合のみカレンダー表示
                 Card(
                   child: Column(
                     children: [
@@ -1781,72 +2037,6 @@ class _ExperimentDetailScreenState extends State<ExperimentDetailScreen> {
                     ],
                   ),
                 ),
-            ],
-
-            // 予約状態の表示
-            if (_currentUserReservation != null && !widget.isMyExperiment) ...[
-              const SizedBox(height: 16),
-              Card(
-                color: Colors.blue.withValues(alpha: 0.1),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.event_available,
-                            color: Colors.blue[700],
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '予約済み',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue[700],
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (_reservedSlot != null) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          '予約日時: ${_formatDateTime(_reservedSlot!.startTime)}',
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ],
-                      if (_currentUserReservation!.canCancel(widget.experiment, slot: _reservedSlot)) ...[
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed: _isLoading ? null : _handleCancelReservation,
-                            icon: _isLoading 
-                              ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : const Icon(Icons.cancel, color: Colors.red),
-                            label: const Text(
-                              '予約をキャンセル',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Colors.red),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
             ],
 
             const SizedBox(height: 24),
@@ -2294,16 +2484,28 @@ class _ExperimentDetailScreenState extends State<ExperimentDetailScreen> {
       
       try {
         await _reservationService.cancelReservation(
-          _currentUserReservation!.id, 
+          _currentUserReservation!.id,
           reasonController.text.isNotEmpty ? reasonController.text : null,
         );
-        
-        // 実験の参加者リストからも削除
+
+        // 実験の参加者リストからも削除（エラーが発生しても処理を続行）
         final user = _auth.currentUser;
         if (user != null) {
-          await _experimentService.leaveExperiment(widget.experiment.id, user.uid);
+          try {
+            // 参加しているか確認してから削除
+            final isParticipating = await _experimentService.isUserParticipating(
+              widget.experiment.id,
+              user.uid,
+            );
+            if (isParticipating) {
+              await _experimentService.leaveExperiment(widget.experiment.id, user.uid);
+            }
+          } catch (leaveError) {
+            // participantsリストからの削除に失敗しても、予約キャンセルは成功とする
+            // エラーログは記録しないが、予約キャンセルは続行
+          }
         }
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -2311,14 +2513,24 @@ class _ExperimentDetailScreenState extends State<ExperimentDetailScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          
-          // 参加状態を更新
+
+          // キャッシュをクリア
+          final user = _auth.currentUser;
+          if (user != null) {
+            final cacheKey = '${user.uid}_${widget.experiment.id}';
+            _reservationCache.remove(cacheKey);
+            _slotCache.remove(cacheKey);
+            print('[DEBUG] 予約キャンセル: キャッシュをクリア cache_key=$cacheKey');
+          }
+
+          // 予約情報とキャンセル状態をクリア
           setState(() {
             _isParticipating = false;
+            _currentUserReservation = null;
+            _reservedSlot = null;
           });
-          
-          // 予約情報を再読み込み
-          await _loadUserReservation();
+
+          // 参加状態を再確認
           await _checkParticipation();
         }
       } catch (e) {

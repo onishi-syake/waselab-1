@@ -120,7 +120,7 @@ class ExperimentReservation {
     if (experiment.fixedExperimentDate != null) {
       final now = DateTime.now();
       final experimentDate = experiment.fixedExperimentDate!;
-      
+
       // 時刻情報がある場合
       if (experiment.fixedExperimentTime != null) {
         final hour = experiment.fixedExperimentTime!['hour'] ?? 0;
@@ -132,12 +132,12 @@ class ExperimentReservation {
           hour,
           minute,
         );
-        
+
         // 実施日時の予約締切日数前までキャンセル可能
         final deadline = scheduledDateTime.subtract(Duration(days: experiment.reservationDeadlineDays));
         return now.isBefore(deadline);
       }
-      
+
       // 日付のみの場合は当日の0:00を基準にする
       final startOfDay = DateTime(
         experimentDate.year,
@@ -148,10 +148,17 @@ class ExperimentReservation {
       return now.isBefore(deadline);
     }
 
+    // スロット予約の場合（柔軟な日程調整より前に判定）
+    if (slot != null) {
+      final now = DateTime.now();
+      final deadline = slot.startTime.subtract(Duration(days: experiment.reservationDeadlineDays));
+      return now.isBefore(deadline);
+    }
+
     // 柔軟な日程調整が可能な実験の場合
     if (experiment.allowFlexibleSchedule) {
       // 参加者の個別スケジュール情報がある場合
-      if (experiment.participantEvaluations != null && 
+      if (experiment.participantEvaluations != null &&
           experiment.participantEvaluations!.containsKey(userId)) {
         final participantInfo = experiment.participantEvaluations![userId];
         if (participantInfo != null && participantInfo['scheduledDate'] != null) {
@@ -162,13 +169,6 @@ class ExperimentReservation {
       }
       // スケジュール未確定の場合は常にキャンセル可能
       return true;
-    }
-
-    // スロット予約の場合
-    if (slot != null) {
-      final now = DateTime.now();
-      final deadline = slot.startTime.subtract(Duration(days: experiment.reservationDeadlineDays));
-      return now.isBefore(deadline);
     }
 
     // その他の場合（通常の実験期間がある場合）
