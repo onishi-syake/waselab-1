@@ -377,7 +377,7 @@ class Experiment {
   bool shouldAutoComplete() {
     // 既に完了している場合はスキップ
     if (status == ExperimentStatus.completed) return false;
-    
+
     // 評価待ち状態の場合：最初の評価（actualStartDate）から1週間経過
     if (status == ExperimentStatus.waitingEvaluation) {
       final startDate = actualStartDate;
@@ -386,14 +386,86 @@ class Experiment {
         if (DateTime.now().isAfter(oneWeekLater)) return true;
       }
     }
-    
+
     // その他の状態：実験期間終了から1週間経過
     final endDate = experimentPeriodEnd;
     if (endDate != null) {
       final oneWeekLater = endDate.add(const Duration(days: 7));
       return DateTime.now().isAfter(oneWeekLater);
     }
-    
+
+    return false;
+  }
+
+  /// 特定の参加者との相互評価が完了しているかをチェック
+  bool isMutuallyCompletedWithUser(String userId) {
+    if (participantEvaluations == null) return false;
+    final userEval = participantEvaluations![userId];
+    if (userEval == null) return false;
+    return userEval['mutuallyCompleted'] ?? false;
+  }
+
+  /// すべての参加者との相互評価が完了しているかをチェック
+  bool areAllMutualEvaluationsCompleted() {
+    if (participants.isEmpty) return true;
+    if (participantEvaluations == null) return false;
+
+    for (final participantId in participants) {
+      if (!isMutuallyCompletedWithUser(participantId)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// 参加者視点で実験が完了しているかをチェック
+  bool isCompletedForParticipant(String participantId) {
+    // まず参加者でない場合はfalse
+    if (!participants.contains(participantId)) return false;
+
+    // 相互評価が完了している場合は完了
+    if (isMutuallyCompletedWithUser(participantId)) return true;
+
+    // ステータスが完了済みの場合も完了とする（互換性のため）
+    if (status == ExperimentStatus.completed) return true;
+
+    return false;
+  }
+
+  /// 実験者視点で実験が完了しているかをチェック
+  bool isCompletedForExperimenter() {
+    // すべての参加者との相互評価が完了している場合
+    if (areAllMutualEvaluationsCompleted()) return true;
+
+    // ステータスが完了済みの場合も完了とする（互換性のため）
+    if (status == ExperimentStatus.completed) return true;
+
+    return false;
+  }
+
+  /// 実験が評価待ち状態かどうかをチェック（UI表示用）
+  bool isWaitingForEvaluation(String userId) {
+    // 実験者の場合
+    if (creatorId == userId) {
+      // 未評価の参加者がいる場合は評価待ち
+      if (participantEvaluations != null) {
+        for (final participantId in participants) {
+          final userEval = participantEvaluations![participantId] ?? {};
+          final creatorEvaluated = userEval['creatorEvaluated'] ?? false;
+          if (!creatorEvaluated) return true;
+        }
+      }
+      return false;
+    }
+
+    // 参加者の場合
+    if (participants.contains(userId)) {
+      // 相互評価が未完了で、評価可能な場合は評価待ち
+      if (!isMutuallyCompletedWithUser(userId) && canEvaluate(userId) && !hasEvaluated(userId)) {
+        return true;
+      }
+    }
+
     return false;
   }
 }

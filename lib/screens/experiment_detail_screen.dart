@@ -223,7 +223,7 @@ class _ExperimentDetailScreenState extends State<ExperimentDetailScreen> {
 
       while (retryCount < maxRetries && reservation == null) {
         if (retryCount > 0) {
-          print('[DEBUG] リトライ ${retryCount}/${maxRetries}');
+          print('[DEBUG] リトライ $retryCount/$maxRetries');
           await Future.delayed(retryDelay);
         }
 

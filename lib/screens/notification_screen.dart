@@ -768,7 +768,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  color: isUnread ? Colors.blue.withOpacity(0.05) : null,
+                  color: isUnread ? null : Colors.grey.withValues(alpha: 0.05),
                   child: InkWell(
                     onTap: () => _handleNotificationTap(notification),
                     child: Padding(

@@ -158,21 +158,20 @@ class _HomeScreenBaseState extends State<HomeScreenBase> {
     }
     
     // ソート処理
-    // 終了済み判定の共通ロジック
-    bool isEnded(Experiment exp) {
+    // 募集終了判定の共通ロジック（ソート用）
+    bool isRecruitmentEnded(Experiment exp) {
       final now = DateTime.now();
+      // 募集終了日が過ぎているか、ステータスが募集中以外
       return (exp.recruitmentEndDate != null && exp.recruitmentEndDate!.isBefore(now)) ||
-             exp.status == ExperimentStatus.completed ||
-             exp.status == ExperimentStatus.waitingEvaluation ||
-             exp.status == ExperimentStatus.ongoing;
+             exp.status != ExperimentStatus.recruiting;
     }
 
     switch (_sortOption) {
       case SortOption.newest:
         filtered.sort((a, b) {
-          // 終了済みの実験を下に
-          final aEnded = isEnded(a);
-          final bEnded = isEnded(b);
+          // 募集終了の実験を下に
+          final aEnded = isRecruitmentEnded(a);
+          final bEnded = isRecruitmentEnded(b);
           if (aEnded && !bEnded) return 1;
           if (!aEnded && bEnded) return -1;
           // それ以外は作成日でソート
@@ -181,9 +180,9 @@ class _HomeScreenBaseState extends State<HomeScreenBase> {
         break;
       case SortOption.oldest:
         filtered.sort((a, b) {
-          // 終了済みの実験を下に
-          final aEnded = isEnded(a);
-          final bEnded = isEnded(b);
+          // 募集終了の実験を下に
+          final aEnded = isRecruitmentEnded(a);
+          final bEnded = isRecruitmentEnded(b);
           if (aEnded && !bEnded) return 1;
           if (!aEnded && bEnded) return -1;
           // それ以外は作成日でソート
@@ -192,9 +191,9 @@ class _HomeScreenBaseState extends State<HomeScreenBase> {
         break;
       case SortOption.highReward:
         filtered.sort((a, b) {
-          // 終了済みの実験を下に
-          final aEnded = isEnded(a);
-          final bEnded = isEnded(b);
+          // 募集終了の実験を下に
+          final aEnded = isRecruitmentEnded(a);
+          final bEnded = isRecruitmentEnded(b);
           if (aEnded && !bEnded) return 1;
           if (!aEnded && bEnded) return -1;
           // それ以外は報酬額でソート
@@ -203,9 +202,9 @@ class _HomeScreenBaseState extends State<HomeScreenBase> {
         break;
       case SortOption.lowReward:
         filtered.sort((a, b) {
-          // 終了済みの実験を下に
-          final aEnded = isEnded(a);
-          final bEnded = isEnded(b);
+          // 募集終了の実験を下に
+          final aEnded = isRecruitmentEnded(a);
+          final bEnded = isRecruitmentEnded(b);
           if (aEnded && !bEnded) return 1;
           if (!aEnded && bEnded) return -1;
           // それ以外は報酬額でソート
@@ -214,9 +213,9 @@ class _HomeScreenBaseState extends State<HomeScreenBase> {
         break;
       case SortOption.soonest:
         filtered.sort((a, b) {
-          // 終了済みの実験を下に
-          final aEnded = isEnded(a);
-          final bEnded = isEnded(b);
+          // 募集終了の実験を下に
+          final aEnded = isRecruitmentEnded(a);
+          final bEnded = isRecruitmentEnded(b);
           if (aEnded && !bEnded) return 1;
           if (!aEnded && bEnded) return -1;
           // それ以外は実験日でソート
@@ -228,9 +227,9 @@ class _HomeScreenBaseState extends State<HomeScreenBase> {
         break;
       case SortOption.latest:
         filtered.sort((a, b) {
-          // 終了済みの実験を下に
-          final aEnded = isEnded(a);
-          final bEnded = isEnded(b);
+          // 募集終了の実験を下に
+          final aEnded = isRecruitmentEnded(a);
+          final bEnded = isRecruitmentEnded(b);
           if (aEnded && !bEnded) return 1;
           if (!aEnded && bEnded) return -1;
           // それ以外は実験日でソート
@@ -932,6 +931,7 @@ class _HomeScreenBaseState extends State<HomeScreenBase> {
                             final experiment = filteredExperiments[index];
                             return RepaintBoundary( // 個別に再描画境界を設定
                               child: ExperimentCard(
+                                key: ValueKey('${experiment.id}_${experiment.creatorId}'),
                                 experiment: experiment,
                                 isDemo: widget.isDemo,
                                 currentUserId: widget.currentUserId,

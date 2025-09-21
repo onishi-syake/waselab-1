@@ -33,6 +33,15 @@ class _ExperimentCardState extends State<ExperimentCard> {
     _loadCreator();
   }
 
+  @override
+  void didUpdateWidget(ExperimentCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.experiment.creatorId != widget.experiment.creatorId) {
+      _isLoadingCreator = true;
+      _loadCreator();
+    }
+  }
+
   Future<void> _loadCreator() async {
     final creator = await _userCache.getUserById(widget.experiment.creatorId);
     if (mounted) {
@@ -72,16 +81,28 @@ class _ExperimentCardState extends State<ExperimentCard> {
     // 締切までの残り日数を計算
     final daysLeft = widget.experiment.endDate?.difference(DateTime.now()).inDays;
 
-    // 終了済み判定
+    // 実験の状態判定
     final now = DateTime.now();
-    final isEnded = (widget.experiment.recruitmentEndDate != null &&
-                    widget.experiment.recruitmentEndDate!.isBefore(now)) ||
-                   widget.experiment.status == ExperimentStatus.completed ||
-                   widget.experiment.status == ExperimentStatus.waitingEvaluation ||
-                   widget.experiment.status == ExperimentStatus.ongoing;
+    final userId = widget.currentUserId ?? '';
+
+    // 募集終了判定（募集期限が過ぎているか、ステータスが募集中以外）
+    final isRecruitmentEnded = (widget.experiment.recruitmentEndDate != null &&
+                                widget.experiment.recruitmentEndDate!.isBefore(now)) ||
+                               widget.experiment.status != ExperimentStatus.recruiting;
+
+    // 実験完了判定
+    final isCompleted = widget.experiment.status == ExperimentStatus.completed ||
+                       (userId.isNotEmpty &&
+                        (widget.experiment.isCompletedForParticipant(userId) ||
+                         (widget.experiment.creatorId == userId && widget.experiment.isCompletedForExperimenter())));
+
+    // 評価待ち判定
+    final isWaitingEvaluation = userId.isNotEmpty &&
+                                widget.experiment.isWaitingForEvaluation(userId) &&
+                                !isCompleted;
 
     // 満員判定（募集中の場合のみ）
-    final isFull = !isEnded &&
+    final isFull = !isRecruitmentEnded &&
                   widget.experiment.status == ExperimentStatus.recruiting &&
                   widget.experiment.maxParticipants != null &&
                   widget.experiment.participants.length >= widget.experiment.maxParticipants!;
@@ -125,16 +146,82 @@ class _ExperimentCardState extends State<ExperimentCard> {
               // 締切タグとスケジュールタイプ表示、状態バッジ
               Row(
                 children: [
-                  // 終了済みタグ（最優先表示）
-                  if (isEnded)
+                  // 完了済みタグ（最優先表示）
+                  if (isCompleted)
                     Container(
                       margin: const EdgeInsets.only(bottom: 6, right: 8),
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.1),
+                        color: Colors.green.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                          color: Colors.red.withValues(alpha: 0.3),
+                          color: Colors.green.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            size: 12,
+                            color: Colors.green[700],
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '完了済み',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green[700],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  // 評価待ちタグ
+                  else if (isWaitingEvaluation)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 6, right: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: Colors.orange.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.rate_review,
+                            size: 12,
+                            color: Colors.orange[700],
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '評価待ち',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orange[700],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  // 募集終了タグ
+                  else if (isRecruitmentEnded)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 6, right: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: Colors.grey.withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -144,21 +231,21 @@ class _ExperimentCardState extends State<ExperimentCard> {
                           Icon(
                             Icons.block,
                             size: 12,
-                            color: Colors.red[700],
+                            color: Colors.grey[700],
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '終了済み',
+                            '募集終了',
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
-                              color: Colors.red[700],
+                              color: Colors.grey[700],
                             ),
                           ),
                         ],
                       ),
                     )
-                  // 満員タグ（終了済みでない場合に表示）
+                  // 満員タグ（募集終了でない場合に表示）
                   else if (isFull)
                     Container(
                       margin: const EdgeInsets.only(bottom: 6, right: 8),
@@ -192,7 +279,7 @@ class _ExperimentCardState extends State<ExperimentCard> {
                       ),
                     ),
                   // 状態バッジ（自分の実験または参加予定）
-                  if (!isEnded && !isFull && widget.currentUserId != null && widget.experiment.creatorId == widget.currentUserId)
+                  if (!isRecruitmentEnded && !isCompleted && !isFull && widget.currentUserId != null && widget.experiment.creatorId == widget.currentUserId)
                     Container(
                       margin: const EdgeInsets.only(bottom: 6, right: 8),
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -224,7 +311,7 @@ class _ExperimentCardState extends State<ExperimentCard> {
                         ],
                       ),
                     ),
-                  if (!isEnded && !isFull && widget.currentUserId != null &&
+                  if (!isRecruitmentEnded && !isCompleted && !isFull && widget.currentUserId != null &&
                       widget.experiment.participants.contains(widget.currentUserId))
                     Container(
                       margin: const EdgeInsets.only(bottom: 6, right: 8),
@@ -258,7 +345,7 @@ class _ExperimentCardState extends State<ExperimentCard> {
                       ),
                     ),
                   // 柔軟なスケジュール調整のバッジ
-                  if (!isEnded && widget.experiment.allowFlexibleSchedule)
+                  if (!isRecruitmentEnded && !isCompleted && widget.experiment.allowFlexibleSchedule)
                     Container(
                       margin: const EdgeInsets.only(bottom: 6, right: 8),
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -290,7 +377,7 @@ class _ExperimentCardState extends State<ExperimentCard> {
                         ],
                       ),
                     )
-                  else if (!isEnded && widget.experiment.type == ExperimentType.survey)
+                  else if (!isRecruitmentEnded && !isCompleted && widget.experiment.type == ExperimentType.survey)
                     Container(
                       margin: const EdgeInsets.only(bottom: 6, right: 8),
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -322,7 +409,7 @@ class _ExperimentCardState extends State<ExperimentCard> {
                         ],
                       ),
                     )
-                  else if (!isEnded && widget.experiment.fixedExperimentDate != null)
+                  else if (!isRecruitmentEnded && !isCompleted && widget.experiment.fixedExperimentDate != null)
                     Container(
                       margin: const EdgeInsets.only(bottom: 6, right: 8),
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -354,7 +441,7 @@ class _ExperimentCardState extends State<ExperimentCard> {
                         ],
                       ),
                     )
-                  else if (!isEnded)
+                  else if (!isRecruitmentEnded && !isCompleted)
                     Container(
                       margin: const EdgeInsets.only(bottom: 6, right: 8),
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),

@@ -208,22 +208,30 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
     final scheduledExperiments = <Experiment>[];
     final waitingEvaluationExperiments = <Experiment>[];
     final completedExperiments = <Experiment>[];
-    
+
     for (final experiment in _participatedExperiments) {
-      final participantEvals = experiment.participantEvaluations ?? {};
-      final myEval = participantEvals[_currentUser?.uid] ?? {};
-      final mutuallyCompleted = myEval['mutuallyCompleted'] ?? false;
-      
-      if (mutuallyCompleted) {
+      final userId = _currentUser?.uid ?? '';
+
+      // 相互評価が完了している場合は完了済み
+      if (experiment.isCompletedForParticipant(userId)) {
         completedExperiments.add(experiment);
-      } else if (experiment.hasEvaluated(_currentUser?.uid ?? '')) {
-        completedExperiments.add(experiment);
-      } else if (experiment.isScheduledFuture(_currentUser?.uid ?? '')) {
-        scheduledExperiments.add(experiment);
-      } else if (experiment.canEvaluate(_currentUser?.uid ?? '')) {
+      }
+      // 評価待ちの場合
+      else if (experiment.isWaitingForEvaluation(userId)) {
         waitingEvaluationExperiments.add(experiment);
-      } else {
+      }
+      // 将来の実験の場合
+      else if (experiment.isScheduledFuture(userId)) {
         scheduledExperiments.add(experiment);
+      }
+      // その他（既に自分だけ評価済みなど）
+      else {
+        // 自分が既に評価済みの場合は評価待ち扱い（相手の評価待ち）
+        if (experiment.hasEvaluated(userId)) {
+          waitingEvaluationExperiments.add(experiment);
+        } else {
+          scheduledExperiments.add(experiment);
+        }
       }
     }
     
@@ -352,16 +360,14 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
 
     final ongoingExperiments = <Experiment>[];
     final completedExperiments = <Experiment>[];
-    
+
     for (final experiment in _createdExperiments) {
-      final unevaluatedCount = _getUnevaluatedParticipantCount(experiment);
-      
-      if (experiment.status == ExperimentStatus.recruiting || 
-          experiment.status == ExperimentStatus.ongoing ||
-          unevaluatedCount > 0) {
-        ongoingExperiments.add(experiment);
-      } else {
+      // 実験者視点で完了しているかチェック
+      if (experiment.isCompletedForExperimenter()) {
         completedExperiments.add(experiment);
+      } else {
+        // 完了していない場合は進行中
+        ongoingExperiments.add(experiment);
       }
     }
 

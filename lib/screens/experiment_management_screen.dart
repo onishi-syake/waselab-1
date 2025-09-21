@@ -719,7 +719,7 @@ class _ExperimentManagementScreenState extends State<ExperimentManagementScreen>
             children: [
               Expanded(
                 child: _buildStatCard(
-                  '未評価',
+                  '相互評価未完了',
                   '${_getNotEvaluatedCount()}',
                   icon: Icons.pending_actions,
                   color: Colors.orange,
@@ -728,7 +728,7 @@ class _ExperimentManagementScreenState extends State<ExperimentManagementScreen>
               const SizedBox(width: 8),
               Expanded(
                 child: _buildStatCard(
-                  '評価済み',
+                  '相互評価完了',
                   '${_getEvaluatedCount()}',
                   icon: Icons.check_circle,
                   color: Colors.green,
@@ -1604,11 +1604,10 @@ class _ExperimentManagementScreenState extends State<ExperimentManagementScreen>
   }
 
   int _getNotEvaluatedCount() {
-    // 参加者のうち、まだ評価が完了していない人数
+    // 相互評価が未完了の参加者数
     int count = 0;
     for (final participantId in _experiment.participants) {
-      final evaluation = _experiment.evaluations?[participantId];
-      if (evaluation == null || !(evaluation['evaluated'] ?? false)) {
+      if (!_experiment.isMutuallyCompletedWithUser(participantId)) {
         count++;
       }
     }
@@ -1616,11 +1615,10 @@ class _ExperimentManagementScreenState extends State<ExperimentManagementScreen>
   }
 
   int _getEvaluatedCount() {
-    // 参加者のうち、評価が完了している人数
+    // 相互評価が完了している参加者数
     int count = 0;
     for (final participantId in _experiment.participants) {
-      final evaluation = _experiment.evaluations?[participantId];
-      if (evaluation != null && (evaluation['evaluated'] ?? false)) {
+      if (_experiment.isMutuallyCompletedWithUser(participantId)) {
         count++;
       }
     }
