@@ -362,8 +362,8 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
     final completedExperiments = <Experiment>[];
 
     for (final experiment in _createdExperiments) {
-      // 実験者視点で完了しているかチェック
-      if (experiment.isCompletedForExperimenter()) {
+      // 実験全体の完了状態で判定
+      if (experiment.status == ExperimentStatus.completed) {
         completedExperiments.add(experiment);
       } else {
         // 完了していない場合は進行中

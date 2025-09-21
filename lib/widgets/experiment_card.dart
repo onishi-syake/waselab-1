@@ -93,8 +93,8 @@ class _ExperimentCardState extends State<ExperimentCard> {
     // 実験完了判定
     final isCompleted = widget.experiment.status == ExperimentStatus.completed ||
                        (userId.isNotEmpty &&
-                        (widget.experiment.isCompletedForParticipant(userId) ||
-                         (widget.experiment.creatorId == userId && widget.experiment.isCompletedForExperimenter())));
+                        widget.experiment.participants.contains(userId) &&
+                        widget.experiment.isCompletedForParticipant(userId));
 
     // 評価待ち判定
     final isWaitingEvaluation = userId.isNotEmpty &&

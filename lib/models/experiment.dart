@@ -423,10 +423,10 @@ class Experiment {
     // まず参加者でない場合はfalse
     if (!participants.contains(participantId)) return false;
 
-    // 相互評価が完了している場合は完了
+    // 参加者個別の相互評価が完了している場合
     if (isMutuallyCompletedWithUser(participantId)) return true;
 
-    // ステータスが完了済みの場合も完了とする（互換性のため）
+    // 実験全体が完了済みの場合も完了とする
     if (status == ExperimentStatus.completed) return true;
 
     return false;
@@ -434,13 +434,9 @@ class Experiment {
 
   /// 実験者視点で実験が完了しているかをチェック
   bool isCompletedForExperimenter() {
-    // すべての参加者との相互評価が完了している場合
-    if (areAllMutualEvaluationsCompleted()) return true;
-
-    // ステータスが完了済みの場合も完了とする（互換性のため）
-    if (status == ExperimentStatus.completed) return true;
-
-    return false;
+    // 実験全体のステータスが完了の場合のみtrue
+    // （実施期間終了 or 満員で全員評価完了）
+    return status == ExperimentStatus.completed;
   }
 
   /// 実験が評価待ち状態かどうかをチェック（UI表示用）
