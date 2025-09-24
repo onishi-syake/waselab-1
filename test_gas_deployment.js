@@ -3,8 +3,8 @@
 
 const https = require('https');
 
-// New GAS URL (deployed by user - forms_api_final.gs - latest)
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwXMqYuj4RmjkR0jDqW3fSQvNoxK4R2jFM9ZhWk4uLa_ntU4DjJnX9g4kBUCEw-xGB8/exec';
+// New GAS URL (deployed with personal account yudai71015@gmail.com)
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyHgz7zSkZiB-RRsEvtC4AJEOAk_JyLXdZ4SdyskDpjrTq7dteyedgM2gLJT2PXygev/exec';
 
 async function makeRequest(url, data) {
   return new Promise((resolve, reject) => {

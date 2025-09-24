@@ -5,8 +5,9 @@ import fetch from "node-fetch";
 // Google Apps Script Web App URLを環境変数から取得
 // 統一されたURLを使用
 const getAppsScriptUrl = (): string => {
-  // 優先順位: google.apps_script_url > googleappsscript.url > google_apps_script.url
-  const configUrl = functions.config()?.google?.apps_script_url ||
+  // 優先順位: gas.url > google.apps_script_url > googleappsscript.url > google_apps_script.url
+  const configUrl = functions.config()?.gas?.url ||
+                    functions.config()?.google?.apps_script_url ||
                     functions.config()?.googleappsscript?.url ||
                     functions.config()?.google_apps_script?.url;
 
@@ -16,6 +17,8 @@ const getAppsScriptUrl = (): string => {
 
   if (!url) {
     console.error("Google Apps Script URL is not configured in any expected location");
+  } else {
+    console.log("Using Google Apps Script URL:", url);
   }
 
   return url;
