@@ -107,7 +107,24 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
 
   Future<void> _selectGoogleAccount() async {
     try {
+      // アカウント選択前にローディングインジケータを表示
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
+
       final account = await _accountService.selectAccount(forceAccountSelection: true);
+
+      // ローディングインジケータを閉じる
+      if (mounted) {
+        Navigator.pop(context);
+      }
+
       if (account != null) {
         // カレンダーとフォームの権限をリクエスト
         final calendarPermission = await _accountService.requestCalendarPermission();
@@ -138,13 +155,32 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
             );
           }
         }
+      } else {
+        // ユーザーがキャンセルした場合
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('アカウント選択がキャンセルされました'),
+              backgroundColor: Colors.grey,
+            ),
+          );
+        }
       }
     } catch (e) {
+      // ローディングインジケータが表示されている場合は閉じる
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+
       if (mounted) {
+        // エラーの詳細をログに出力
+        debugPrint('Google Sign-In Error: $e');
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('アカウント選択エラー: $e'),
+            content: Text('アカウント選択エラー: ${e.toString()}'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
           ),
         );
       }

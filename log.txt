@@ -1,247 +1,114 @@
-A Dart VM Service on SM M236Q is available at: http://127.0.0.1:58531/uoqyX0ixQsU=/
-I/flutter (31060): [main.dart] ========= APP START =========
-I/flutter (31060): [main.dart] Starting at: 2025-09-16T09:03:15.251983
-I/flutter (31060): [main.dart] Platform: android
-I/flutter (31060): [main.dart] Initializing Firebase...
-I/IDS_TAG (31060): Closing IDS observe window
-I/IDS_TAG (31060): Getting Shared Preference for android.app.Application@c7a6056 uid = 10501
-I/IDS_TAG (31060): IDS count updated to 1 for android.app.Application@c7a6056
-I/Choreographer(31060): Skipped 228 frames!  The application may be doing too much work on its main thread.
-I/SurfaceView@2d179ef(31060): onWindowVisibilityChanged(0) true io.flutter.embedding.android.FlutterSurfaceView{2d179ef V.E...... ......I. 0,0-0,0} of ViewRootImpl@3efb3f5[MainActivity]
-D/SurfaceView@2d179ef(31060): 47282671 updateSurface: has no frame
-I/BufferQueueProducer(31060): [](id:795400000000,api:0,p:1718773108,c:31060) setDequeueTimeout:2077252342
-I/BLASTBufferQueue_Java(31060): new BLASTBufferQueue, mName= ViewRootImpl@3efb3f5[MainActivity] mNativeObject= 0xb40000774e44e000 sc.mNativeObject= 0xb40000775f1a7e80 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3028 android.view.ViewRootImpl.relayoutWindow:10131 android.view.ViewRootImpl.performTraversals:4110 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 android.view.Choreographer.doCallbacks:1153 android.view.Choreographer.doFrame:1079 android.view.Choreographer$FrameDisplayEventReceiver.run:1646 
-I/BLASTBufferQueue_Java(31060): update, w= 1080 h= 2408 mName = ViewRootImpl@3efb3f5[MainActivity] mNativeObject= 0xb40000774e44e000 sc.mNativeObject= 0xb40000775f1a7e80 format= -3 caller= android.graphics.BLASTBufferQueue.<init>:89 android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3028 android.view.ViewRootImpl.relayoutWindow:10131 android.view.ViewRootImpl.performTraversals:4110 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 
-I/ViewRootImpl@3efb3f5[MainActivity](31060): Relayout returned: old=(0,0,1080,2408) new=(0,0,1080,2408) relayoutAsync=false req=(1080,2408)0 dur=21 res=0x403 s={true 0xb40000774e301000} ch=true seqId=0
-D/ViewRootImpl@3efb3f5[MainActivity](31060): mThreadedRenderer.initialize() mSurface={isValid=true 0xb40000774e301000} hwInitialized=true
-D/SurfaceView@2d179ef(31060): 47282671 updateSurface: has no frame
-I/SurfaceView@2d179ef(31060): windowStopped(false) true io.flutter.embedding.android.FlutterSurfaceView{2d179ef V.E...... ......ID 0,0-1080,2273} of ViewRootImpl@3efb3f5[MainActivity]
-D/SurfaceView@2d179ef(31060): 47282671 updateSurface: has no frame
-D/ViewRootImpl@3efb3f5[MainActivity](31060): reportNextDraw android.view.ViewRootImpl.performTraversals:4718 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 
-I/SurfaceView(31060): 47282671 Changes: creating=true format=true size=true visible=true alpha=false hint=false visible=true left=true top=true z=false attached=true lifecycleStrategy=false
-I/BufferQueueProducer(31060): [](id:795400000001,api:0,p:2037654139,c:31060) setDequeueTimeout:2077252342
-I/BLASTBufferQueue_Java(31060): update, w= 1080 h= 2273 mName = null mNativeObject= 0xb40000774e450400 sc.mNativeObject= 0xb40000774e2fe6c0 format= 4 caller= android.view.SurfaceView.createBlastSurfaceControls:1517 android.view.SurfaceView.updateSurface:1193 android.view.SurfaceView.lambda$new$0:258 android.view.SurfaceView.$r8$lambda$cm3nmzErr-srXoT_KjIYQgdhFN0:0 android.view.SurfaceView$$ExternalSyntheticLambda2.onPreDraw:2 android.view.ViewTreeObserver.dispatchOnPreDraw:1204 
-I/SurfaceView@2d179ef(31060): 47282671 Cur surface: Surface(name=null)/@0xdc380ea
-I/SurfaceView@2d179ef(31060): pST: sr = Rect(0, 0 - 1080, 2273) sw = 1080 sh = 2273
-D/SurfaceView@2d179ef(31060): 47282671 performSurfaceTransaction RenderWorker position = [0, 0, 1080, 2273] surfaceSize = 1080x2273
-I/SurfaceView@2d179ef(31060): updateSurface: mVisible = true mSurface.isValid() = true
-I/SurfaceView@2d179ef(31060): updateSurface: mSurfaceCreated = false surfaceChanged = true visibleChanged = true
-I/SurfaceView(31060): 47282671 visibleChanged -- surfaceCreated
-I/SurfaceView@2d179ef(31060): surfaceCreated 1 #8 io.flutter.embedding.android.FlutterSurfaceView{2d179ef V.E...... ......ID 0,0-1080,2273}
-E/qdgralloc(31060): GetGpuPixelFormat: No map for format: 0x38
-E/AdrenoUtils(31060): <validate_memory_layout_input_parmas:1962>: Unknown Format 0
-E/AdrenoUtils(31060): <adreno_init_memory_layout:4689>: Memory Layout input parameter validation failed!
-E/qdgralloc(31060): GetGpuResourceSizeAndDimensions Graphics metadata init failed
-E/Gralloc4(31060): isSupported(1, 1, 56, 1, ...) failed with 1
-E/GraphicBufferAllocator(31060): Failed to allocate (4 x 4) layerCount 1 format 56 usage b00: 1
-E/AHardwareBuffer(31060): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -1), handle=0x0
-E/qdgralloc(31060): GetGpuPixelFormat: No map for format: 0x3b
-E/AdrenoUtils(31060): <validate_memory_layout_input_parmas:1962>: Unknown Format 0
-E/AdrenoUtils(31060): <adreno_init_memory_layout:4689>: Memory Layout input parameter validation failed!
-E/qdgralloc(31060): GetGpuResourceSizeAndDimensions Graphics metadata init failed
-E/Gralloc4(31060): isSupported(1, 1, 59, 1, ...) failed with 1
-E/GraphicBufferAllocator(31060): Failed to allocate (4 x 4) layerCount 1 format 59 usage b00: 1
-E/AHardwareBuffer(31060): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -1), handle=0x0
-E/qdgralloc(31060): GetGpuPixelFormat: No map for format: 0x38
-E/AdrenoUtils(31060): <validate_memory_layout_input_parmas:1962>: Unknown Format 0
-E/AdrenoUtils(31060): <adreno_init_memory_layout:4689>: Memory Layout input parameter validation failed!
-E/qdgralloc(31060): GetGpuResourceSizeAndDimensions Graphics metadata init failed
-E/Gralloc4(31060): isSupported(1, 1, 56, 1, ...) failed with 1
-E/GraphicBufferAllocator(31060): Failed to allocate (4 x 4) layerCount 1 format 56 usage b00: 1
-E/AHardwareBuffer(31060): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -1), handle=0x0
-E/qdgralloc(31060): GetGpuPixelFormat: No map for format: 0x3b
-E/AdrenoUtils(31060): <validate_memory_layout_input_parmas:1962>: Unknown Format 0
-E/AdrenoUtils(31060): <adreno_init_memory_layout:4689>: Memory Layout input parameter validation failed!
-E/qdgralloc(31060): GetGpuResourceSizeAndDimensions Graphics metadata init failed
-E/Gralloc4(31060): isSupported(1, 1, 59, 1, ...) failed with 1
-E/GraphicBufferAllocator(31060): Failed to allocate (4 x 4) layerCount 1 format 59 usage b00: 1
-E/AHardwareBuffer(31060): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -1), handle=0x0
-I/SurfaceView(31060): 47282671 surfaceChanged -- format=4 w=1080 h=2273
-I/SurfaceView@2d179ef(31060): surfaceChanged (1080,2273) 1 #8 io.flutter.embedding.android.FlutterSurfaceView{2d179ef V.E...... ......ID 0,0-1080,2273}
-I/SurfaceView(31060): 47282671 surfaceRedrawNeeded
-V/SurfaceView@2d179ef(31060): Layout: x=0 y=0 w=1080 h=2273, frame=Rect(0, 0 - 1080, 2273)
-D/SharedPreferencesImpl(31060): Time required to fsync /data/user/0/com.example.experiment_cooperation_app/shared_prefs/android.app.ActivityThread.IDS.xml: [<1: 0, <2: 0, <4: 0, <8: 0, <16: 0, <32: 0, <64: 0, <128: 0, <256: 0, <512: 1, <1024: 0, <2048: 0, <4096: 0, <8192: 0, <16384: 0, >=16384: 0]
-The Flutter DevTools debugger and profiler on SM M236Q is available at: http://127.0.0.1:9102?uri=http://127.0.0.1:58531/uoqyX0ixQsU=/
-D/OpenGLRenderer(31060): HWUI - treat SMPTE_170M as sRGB
-D/CompatibilityChangeReporter(31060): Compat change id reported: 3400644; UID 10501; state: ENABLED
-I/InsetsSourceConsumer(31060): applyRequestedVisibilityToControl: visible=true, type=statusBars, host=com.example.experiment_cooperation_app/com.example.experiment_cooperation_app.MainActivity
-I/InsetsSourceConsumer(31060): applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.example.experiment_cooperation_app/com.example.experiment_cooperation_app.MainActivity
-E/FirebearStorageCryptoHelper(31060): Exception encountered during crypto setup:
-E/FirebearStorageCryptoHelper(31060): Keystore cannot load the key with ID: firebear_main_key_id_for_storage_crypto.W0RFRkFVTFRd+MTo3ODgxNDM5NzQyMzY6YW5kcm9pZDo2MjQ2ZjRkMTM1NTZkNGI2MDAwMzk5
-E/FirebearStorageCryptoHelper(31060): KeysetManager failed to initialize - unable to decrypt data
-I/flutter (31060): [main.dart] Firebase initialized at: 2025-09-16T09:03:16.787348
-I/flutter (31060): [main.dart] FirebaseAuth persistence is LOCAL by default in Flutter
-I/flutter (31060): [main.dart] Setting up AuthStateListener...
-I/flutter (31060): [main.dart] Current user BEFORE listener: null
-I/flutter (31060): [main.dart] Waiting for first auth state event...
-I/flutter (31060): [main.dart] Stage 1/7: Waiting 200ms... (total: 0ms)
-I/flutter (31060): [main.dart] AuthStateListener fired #1: user=null (null) at 2025-09-16T09:03:16.830061
-I/flutter (31060): [main.dart]   - currentUser check: null (verified: null)
-I/flutter (31060): [main.dart] Auth state resolved after 200ms (listener fired: 1 times)
-I/flutter (31060): [main.dart] ========= AUTH STATE SUMMARY =========
-I/flutter (31060): [main.dart] Total wait time: 200ms
-I/flutter (31060): [main.dart] Listener fired: 1 times
-I/flutter (31060): [main.dart] Auth state resolved: true
-I/flutter (31060): [main.dart] Restored user: null (null)
-I/flutter (31060): [main.dart] Current user: null
-I/flutter (31060): [main.dart] ========================================
-I/flutter (31060): [main.dart] No user found via AuthStateListener, attempting manual restoration...
-I/flutter (31060): [AuthPersistence] ========= RESTORE START =========
-I/flutter (31060): [AuthPersistence] Starting at: 2025-09-16T09:03:17.061989
-I/flutter (31060): [AuthPersistence] Attempting to restore auth state...
-I/flutter (31060): [AuthPersistence] Retrieved from SharedPreferences:
-I/flutter (31060): [AuthPersistence]   - UID: YTvsGX9NpTWeHPTr5QgWtVuO1y12
-I/flutter (31060): [AuthPersistence]   - Email: yudai5287@ruri.waseda.jp
-I/flutter (31060): [AuthPersistence]   - Method: email
-I/flutter (31060): [AuthPersistence]   - Has Auth: true
-I/flutter (31060): [AuthPersistence]   - Last Sign In: 2025-09-16T09:02:03.070699
-I/flutter (31060): [AuthPersistence] All SharedPreferences keys: auth_method, user_email, user_uid, first_launch_date, last_sign_in, has_auth
-I/flutter (31060): [AuthPersistence] Current Firebase user:
-I/flutter (31060):   - Has user: false
-I/flutter (31060):   - UID: null
-I/flutter (31060):   - Email: null
-I/flutter (31060): [AuthPersistence] No current user found
-I/flutter (31060): [AuthPersistence] Auth method: email
-I/flutter (31060): [AuthPersistence] Email auth detected
-I/flutter (31060): [AuthPersistence] Checking Firebase Auth state restoration...
-I/flutter (31060): [AuthPersistence] Waiting 500ms for auth state... (total: 0ms)
-I/flutter (31060): [AuthPersistence] AuthStateChanges fired: null at 2025-09-16T09:03:17.094918
-I/flutter (31060): [AuthPersistence] Waiting 500ms for auth state... (total: 500ms)
-I/flutter (31060): [AuthPersistence] Waiting 1000ms for auth state... (total: 1000ms)
-I/flutter (31060): [AuthPersistence] Waiting 1000ms for auth state... (total: 2000ms)
-I/flutter (31060): [AuthPersistence] Waiting 2000ms for auth state... (total: 3000ms)
-D/ProfileInstaller(31060): Installing profile for com.example.experiment_cooperation_app
-I/flutter (31060): [AuthPersistence] ⚠️ Email auth could not be restored automatically after 3 seconds
-I/flutter (31060): [AuthPersistence] Trying manual restoration with saved token...
-I/flutter (31060): [AuthPersistence] Cannot restore email auth with token alone
-I/flutter (31060): [AuthPersistence] ❌ Manual restoration failed
-I/flutter (31060): [AuthPersistence] User needs to sign in again
-I/flutter (31060): [main.dart] Manual restoration result: false
-I/FLTFireBGExecutor(31060): Creating background FlutterEngine instance, with args: [--enable-dart-profiling]
-I/AdrenoVK-0(31060): QUALCOMM build          : cc892008d2, I9649d5205a
-I/AdrenoVK-0(31060): Build Date              : 10/28/22
-I/AdrenoVK-0(31060): Shader Compiler Version : EV031.32.02.06
-I/AdrenoVK-0(31060): Local Branch            : 
-I/AdrenoVK-0(31060): Remote Branch           : refs/tags/AU_LINUX_ANDROID_LA.UM.9.12.10.00.00.582.370
-I/AdrenoVK-0(31060): Remote Branch           : NONE
-I/AdrenoVK-0(31060): Reconstruct Branch      : NOTHING
-I/AdrenoVK-0(31060): Build Config            : S P 10.0.7 AArch64
-I/AdrenoVK-0(31060): Driver Path             : /vendor/lib64/hw/vulkan.adreno.so
-D/FLTFireContextHolder(31060): received application context.
-I/flutter (31060): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
-I/Choreographer(31060): Skipped 38 frames!  The application may be doing too much work on its main thread.
-I/FLTFireMsgService(31060): FlutterFirebaseMessagingBackgroundService started!
-I/flutter (31060): [main.dart] All initialization completed
-I/flutter (31060): [main.dart] Final user state: null
-I/flutter (31060): [AuthWrapper] ========= AUTH CHECK START =========
-I/flutter (31060): [AuthWrapper] Checking at: 2025-09-16T09:03:24.655658
-I/flutter (31060): [AuthWrapper] Initial currentUser: null (null)
-I/flutter (31060): [AuthWrapper]   - emailVerified: null
-I/flutter (31060): [AuthWrapper]   - providerData: null
-I/flutter (31060): [AuthWrapper] No user found, waiting for authStateChanges...
-I/flutter (31060): [AuthWrapper] AuthStateChanges first event: null
-I/flutter (31060): [AuthWrapper] Still no user, attempting manual restoration...
-I/flutter (31060): [AuthPersistence] ========= RESTORE START =========
-I/flutter (31060): [AuthPersistence] Starting at: 2025-09-16T09:03:24.889933
-I/flutter (31060): [AuthPersistence] Attempting to restore auth state...
-I/flutter (31060): [AuthWrapper Monitor] Auth state changed: null (null) at 2025-09-16T09:03:24.891004
-I/flutter (31060): [AuthWrapper Monitor] User changed: null (emailVerified: null) at 2025-09-16T09:03:24.891970
-I/flutter (31060): [AuthPersistence] Retrieved from SharedPreferences:
-I/flutter (31060): [AuthPersistence]   - UID: YTvsGX9NpTWeHPTr5QgWtVuO1y12
-I/flutter (31060): [AuthPersistence]   - Email: yudai5287@ruri.waseda.jp
-I/flutter (31060): [AuthPersistence]   - Method: email
-I/flutter (31060): [AuthPersistence]   - Has Auth: true
-I/flutter (31060): [AuthPersistence]   - Last Sign In: 2025-09-16T09:02:03.070699
-I/flutter (31060): [AuthPersistence] All SharedPreferences keys: auth_method, user_email, user_uid, first_launch_date, last_sign_in, has_auth
-I/flutter (31060): [AuthPersistence] Current Firebase user:
-I/flutter (31060):   - Has user: false
-I/flutter (31060):   - UID: null
-I/flutter (31060):   - Email: null
-I/flutter (31060): [AuthPersistence] No current user found
-I/flutter (31060): [AuthPersistence] Auth method: email
-I/flutter (31060): [AuthPersistence] Email auth detected
-I/flutter (31060): [AuthPersistence] Checking Firebase Auth state restoration...
-I/flutter (31060): [AuthPersistence] Waiting 500ms for auth state... (total: 0ms)
-I/flutter (31060): [AuthPersistence] AuthStateChanges fired: null at 2025-09-16T09:03:24.903850
-I/Choreographer(31060): Skipped 94 frames!  The application may be doing too much work on its main thread.
-I/BLASTBufferQueue(31060): [SurfaceView[com.example.experiment_cooperation_app/com.example.experiment_cooperation_app.MainActivity]@0#1](f:0,a:0,s:0) onFrameAvailable the first frame is available
-I/BLASTBufferQueue_Java(31060): update, w= 1080 h= 2408 mName = ViewRootImpl@3efb3f5[MainActivity] mNativeObject= 0xb40000774e44e000 sc.mNativeObject= 0xb4000076f9810240 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3017 android.view.ViewRootImpl.relayoutWindow:10131 android.view.ViewRootImpl.performTraversals:4110 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 
-I/ViewRootImpl@3efb3f5[MainActivity](31060): Relayout returned: old=(0,0,1080,2408) new=(0,0,1080,2408) relayoutAsync=false req=(1080,2408)0 dur=77 res=0x401 s={true 0xb40000774e301000} ch=false seqId=0
-I/ViewRootImpl@3efb3f5[MainActivity](31060): updateBoundsLayer: t=android.view.SurfaceControl$Transaction@1bd8f66 sc=Surface(name=Bounds for - com.example.experiment_cooperation_app/com.example.experiment_cooperation_app.MainActivity@0)/@0xe4b52a7 frame=1
-D/ViewRootImpl@3efb3f5[MainActivity](31060): reportNextDraw android.view.ViewRootImpl.performTraversals:4718 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 
-I/SurfaceView(31060): 47282671 finishedDrawing
-I/flutter (31060): [AuthPersistence] Waiting 500ms for auth state... (total: 500ms)
-I/ViewRootImpl@3efb3f5[MainActivity](31060): Setup new sync=wmsSync-ViewRootImpl@3efb3f5[MainActivity]#1
-I/ViewRootImpl@3efb3f5[MainActivity](31060): Creating new active sync group ViewRootImpl@3efb3f5[MainActivity]#2
-I/ViewRootImpl@3efb3f5[MainActivity](31060): registerCallbacksForSync syncBuffer=false
-D/SurfaceView(31060): 47282671 updateSurfacePosition RenderWorker, frameNr = 1, position = [0, 0, 1080, 2273] surfaceSize = 1080x2273
-I/SurfaceView@2d179ef(31060): uSP: rtp = Rect(0, 0 - 1080, 2273) rtsw = 1080 rtsh = 2273
-I/SurfaceView@2d179ef(31060): onSSPAndSRT: pl = 0 pt = 0 sx = 1.0 sy = 1.0
-I/SurfaceView@2d179ef(31060): aOrMT: ViewRootImpl@3efb3f5[MainActivity] t = android.view.SurfaceControl$Transaction@c2772fd fN = 1 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1666 android.graphics.RenderNode$CompositePositionUpdateListener.positionChanged:369 
-I/ViewRootImpl@3efb3f5[MainActivity](31060): mWNT: t=0xb4000076f978d280 mBlastBufferQueue=0xb40000774e44e000 fn= 1 mRenderHdrSdrRatio=1.0 caller= android.view.SurfaceView.applyOrMergeTransaction:1598 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1666 
-I/ViewRootImpl@3efb3f5[MainActivity](31060): Received frameDrawingCallback syncResult=0 frameNum=1.
-I/ViewRootImpl@3efb3f5[MainActivity](31060): mWNT: t=0xb4000076cb6ace80 mBlastBufferQueue=0xb40000774e44e000 fn= 1 mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$8.onFrameDraw:13841 android.view.ThreadedRenderer$1.onFrameDraw:792 <bottom of call stack> 
-I/ViewRootImpl@3efb3f5[MainActivity](31060): Setting up sync and frameCommitCallback
-I/BLASTBufferQueue(31060): [ViewRootImpl@3efb3f5[MainActivity]#0](f:0,a:0,s:0) onFrameAvailable the first frame is available
-I/ViewRootImpl@3efb3f5[MainActivity](31060): Received frameCommittedCallback lastAttemptedDrawFrameNum=1 didProduceBuffer=true
-D/OpenGLRenderer(31060): CFMS:: SetUp Pid : 31060    Tid : 31130
-I/ViewRootImpl@3efb3f5[MainActivity](31060): reportDrawFinished seqId=0
-I/ViewRootImpl@3efb3f5[MainActivity](31060): handleWindowFocusChanged: 1 0 call from android.view.ViewRootImpl.-$$Nest$mhandleWindowFocusChanged:0
-D/ViewRootImpl@3efb3f5[MainActivity](31060): mThreadedRenderer.initializeIfNeeded()#2 mSurface={isValid=true 0xb40000774e301000}
-D/InputMethodManagerUtils(31060): startInputInner - Id : 0
-I/InputMethodManager(31060): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
-D/InputMethodManagerUtils(31060): startInputInner - Id : 0
-I/InsetsController(31060): onStateChanged: host=com.example.experiment_cooperation_app/com.example.experiment_cooperation_app.MainActivity, from=android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7209, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2408), mDisplayCutout=DisplayCutout{insets=Rect(0, 70 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(468, 0 - 612, 70), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2408 physicalDisplayWidth=1080 physicalDisplayHeight=2408 density={2.8125} cutoutSpec={M 0,0 H -25.6 V 24.8888888888889 H 25.6 V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2408), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 70) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=1080 displayHeight=2408 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {bd250001 mType=navigationBars mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {bd250004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {bd250005 mType=mandatorySystemGestures mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {bd250006 mType=tappableElement mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {bd250024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {c1890000 mType=statusBars mFrame=[0,0][1080,70] mVisible=true mFlags=[]}, InsetsSource: {c1890005 mType=mandatorySystemGestures mFrame=[0,0][1080,104] mVisible=true mFlags=[]}, InsetsSource: {c1890006 mType=tappableElement mFrame=[0,0][1080,70] mVisible=true mFlags=[]}, InsetsSource: {3 mType=ime mFrame=[0,0][0,0] mVisible=false mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,70] mVisible=true mFlags=[]} }
-I/InsetsSourceConsumer(31060): applyRequestedVisibilityToControl: visible=false, type=ime, host=com.example.experiment_cooperation_app/com.example.experiment_cooperation_app.MainActivity
-I/flutter (31060): [AuthPersistence] Waiting 1000ms for auth state... (total: 1000ms)
-I/flutter (31060): [AuthPersistence] Waiting 1000ms for auth state... (total: 2000ms)
-I/flutter (31060): [AuthPersistence] Waiting 2000ms for auth state... (total: 3000ms)
-I/flutter (31060): [AuthPersistence] ⚠️ Email auth could not be restored automatically after 3 seconds
-I/flutter (31060): [AuthPersistence] Trying manual restoration with saved token...
-I/flutter (31060): [AuthPersistence] Cannot restore email auth with token alone
-I/flutter (31060): [AuthPersistence] ❌ Manual restoration failed
-I/flutter (31060): [AuthPersistence] User needs to sign in again
-I/flutter (31060): [AuthWrapper] Manual restoration result: false
-I/flutter (31060): [AuthWrapper] Final user: null (null)
-I/flutter (31060): [AuthWrapper]   - emailVerified: null
-I/flutter (31060): [AuthWrapper] ========= AUTH CHECK END =========
-I/flutter (31060): [AuthWrapper StreamBuilder] Connection: ConnectionState.waiting
-I/flutter (31060): [AuthWrapper StreamBuilder] Has data: false
-I/flutter (31060): [AuthWrapper StreamBuilder] User: null (null)
-I/flutter (31060): [AuthWrapper StreamBuilder] Connection: ConnectionState.active
-I/flutter (31060): [AuthWrapper StreamBuilder] Has data: false
-I/flutter (31060): [AuthWrapper StreamBuilder] User: null (null)
-I/flutter (31060): [AuthWrapper] No user - showing login screen
-I/ViewRootImpl@3efb3f5[MainActivity](31060): handleWindowFocusChanged: 0 0 call from android.view.ViewRootImpl.-$$Nest$mhandleWindowFocusChanged:0
-I/ImeFocusController(31060): onPreWindowFocus: skipped, hasWindowFocus=false mHasImeFocus=true
-I/flutter (31060): [AuthWrapper] App lifecycle state changed: AppLifecycleState.inactive
-I/ImeFocusController(31060): onPostWindowFocus: skipped, hasWindowFocus=false mHasImeFocus=true
-I/ViewRootImpl@3efb3f5[MainActivity](31060): handleAppVisibility mAppVisible = true visible = false
-I/SurfaceView@2d179ef(31060): onWindowVisibilityChanged(8) false io.flutter.embedding.android.FlutterSurfaceView{2d179ef V.E...... ........ 0,0-1080,2273} of ViewRootImpl@3efb3f5[MainActivity]
-I/SurfaceView(31060): 47282671 Changes: creating=false format=false size=false visible=true alpha=false hint=false visible=true left=false top=false z=false attached=true lifecycleStrategy=false
-I/SurfaceView@2d179ef(31060): 47282671 Cur surface: Surface(name=null)/@0xdc380ea
-I/SurfaceView(31060): 47282671 surfaceDestroyed
-I/SurfaceView@2d179ef(31060): surfaceDestroyed callback.size 1 #2 io.flutter.embedding.android.FlutterSurfaceView{2d179ef V.E...... ........ 0,0-1080,2273}
-I/SurfaceView@2d179ef(31060): updateSurface: mVisible = false mSurface.isValid() = true
-I/SurfaceView@2d179ef(31060): releaseSurfaces: viewRoot = ViewRootImpl@3efb3f5[MainActivity]
-V/SurfaceView@2d179ef(31060): Layout: x=0 y=0 w=1080 h=2273, frame=Rect(0, 0 - 1080, 2273)
-I/ViewRootImpl@3efb3f5[MainActivity](31060): destroyHardwareResources: Callers=android.view.ViewRootImpl.performTraversals:3932 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 android.view.Choreographer.doCallbacks:1153 android.view.Choreographer.doFrame:1079 android.view.Choreographer$FrameDisplayEventReceiver.run:1646 android.os.Handler.handleCallback:958 android.os.Handler.dispatchMessage:99 
-D/SurfaceView(31060): 14899694 windowPositionLost, frameNr = 0
-D/OpenGLRenderer(31060): CacheManager::trimMemory(20)
-I/ViewRootImpl@3efb3f5[MainActivity](31060): Relayout returned: old=(0,0,1080,2408) new=(0,0,1080,2408) relayoutAsync=false req=(1080,2408)8 dur=26 res=0x402 s={false 0x0} ch=true seqId=0
-I/SurfaceView@2d179ef(31060): windowStopped(true) false io.flutter.embedding.android.FlutterSurfaceView{2d179ef V.E...... ........ 0,0-1080,2273} of ViewRootImpl@3efb3f5[MainActivity]
-D/SurfaceView@2d179ef(31060): updateSurface: surface is not valid
-I/SurfaceView@2d179ef(31060): releaseSurfaces: viewRoot = ViewRootImpl@3efb3f5[MainActivity]
-D/SurfaceView@2d179ef(31060): updateSurface: surface is not valid
-I/SurfaceView@2d179ef(31060): releaseSurfaces: viewRoot = ViewRootImpl@3efb3f5[MainActivity]
-D/OpenGLRenderer(31060): CacheManager::trimMemory(20)
-I/ViewRootImpl@3efb3f5[MainActivity](31060): stopped(true) old = false
-D/ViewRootImpl@3efb3f5[MainActivity](31060): WindowStopped on com.example.experiment_cooperation_app/com.example.experiment_cooperation_app.MainActivity set to true
-D/OpenGLRenderer(31060): CacheManager::trimMemory(20)
-I/flutter (31060): [AuthWrapper] App lifecycle state changed: AppLifecycleState.hidden
-I/flutter (31060): [AuthWrapper] App lifecycle state changed: AppLifecycleState.paused
-D/SurfaceView@2d179ef(31060): updateSurface: surface is not valid
-I/SurfaceView@2d179ef(31060): releaseSurfaces: viewRoot = ViewRootImpl@3efb3f5[MainActivity]
-D/SurfaceView@2d179ef(31060): updateSurface: surface is not valid
-I/SurfaceView@2d179ef(31060): releaseSurfaces: viewRoot = ViewRootImpl@3efb3f5[MainActivity]
-D/InputTransport(31060): Input channel destroyed: 'ClientS', fd=168
+Flutter run key commands.
+h List all available interactive commands.
+c Clear the screen
+q Quit (terminate the application on the device).
+
+I/flutter (15929): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+I/flutter (15929): [main.dart] ========= APP START =========
+I/flutter (15929): [main.dart] Starting at: 2025-09-24T04:05:38.685492
+I/flutter (15929): [main.dart] Platform: android
+I/flutter (15929): [main.dart] Initializing Firebase...
+I/flutter (15929): [main.dart] Firebase initialized at: 2025-09-24T04:05:38.989596
+I/flutter (15929): [main.dart] ========= AUTO RE-LOGIN MAIN MODE =========
+I/flutter (15929): [main.dart] Using auto re-login as primary auth restoration method
+I/flutter (15929): [main.dart] Firebase Auth native restoration will be ignored
+I/flutter (15929): [main.dart] Attempting immediate auto re-login...
+I/flutter (15929): [main.dart] No saved credentials found - user needs to log in
+I/flutter (15929): [main.dart] This is expected for: first launch, after logout, or Google login users
+I/flutter (15929): [main.dart] =============================================
+I/flutter (15929): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+I/flutter (15929): [main.dart] All initialization completed
+I/flutter (15929): [main.dart] Final user state: null (null)
+I/flutter (15929): [main.dart] Total startup time: 4:05:43.089758
+I/flutter (15929): [AuthWrapper] Initial user from auto re-login: null
+I/flutter (15929): [AuthWrapper StreamBuilder] Connection: ConnectionState.waiting
+I/flutter (15929): [AuthWrapper StreamBuilder] Has data: false
+I/flutter (15929): [AuthWrapper StreamBuilder] User: null (null)
+I/flutter (15929): [AuthWrapper Monitor] Auth state changed: null (null) at 2025-09-24T04:05:43.094906
+I/flutter (15929): [AuthWrapper Monitor] User changed: null (emailVerified: null) at 2025-09-24T04:05:43.094978
+I/flutter (15929): [AuthWrapper StreamBuilder] Connection: ConnectionState.active
+I/flutter (15929): [AuthWrapper StreamBuilder] Has data: false
+I/flutter (15929): [AuthWrapper StreamBuilder] User: null (null)
+I/flutter (15929): [AuthWrapper] No user - showing login screen
+I/flutter (15929): [AuthWrapper Monitor] User changed: YTvsGX9NpTWeHPTr5QgWtVuO1y12 (emailVerified: true) at 2025-09-24T04:05:56.545680
+I/flutter (15929): [AuthWrapper Monitor] Auth state changed: YTvsGX9NpTWeHPTr5QgWtVuO1y12 (yudai5287@ruri.waseda.jp) at 2025-09-24T04:05:56.547974
+I/flutter (15929): [AuthWrapper StreamBuilder] Connection: ConnectionState.active
+I/flutter (15929): [AuthWrapper StreamBuilder] Has data: true
+I/flutter (15929): [AuthWrapper StreamBuilder] User: YTvsGX9NpTWeHPTr5QgWtVuO1y12 (yudai5287@ruri.waseda.jp)
+I/flutter (15929): [AuthWrapper] User logged in: YTvsGX9NpTWeHPTr5QgWtVuO1y12 (Verified: true)
+I/flutter (15929): [04:05:58.018] ℹ️ 💾 Email auth state saved
+I/flutter (15929):   Data: {uid: YTvsGX9NpTWeHPTr5QgWtVuO1y12, email: yudai5287@ruri.waseda.jp, method: email, savedSuccessfully: true, verificationPassed: true, timestamp: 2025-09-24T04:05:58.018284}
+I/flutter (15929): [Calendar] Notification data: {slotId: Hsj53Bs3z5YCDuE7BMl0, experimentId: pzt7CZVGAcbGGGgCTPLM, startTime: 2025-09-30T09:00:00.000, endTime: 2025-09-30T11:01:00.000, participantName: miya}
+I/flutter (15929): [Calendar] Experiment type: ScheduleType.individual
+I/flutter (15929): [Calendar] Is participant notification: null
+I/flutter (15929): [Calendar] Creator notification detected
+I/flutter (15929): [Calendar] Creator: Has slotId - can add
+I/flutter (15929): [Calendar] Notification data: {experimentId: wox9noJgnmpo3uTlj4c4, slotId: u86BalA2bTTRJwRkLz4K, startTime: 2025-10-30T09:00:00.000, endTime: 2025-10-30T11:01:00.000, participantName: miya}
+I/flutter (15929): [Calendar] Experiment type: ScheduleType.reservation
+I/flutter (15929): [Calendar] Is participant notification: null
+I/flutter (15929): [Calendar] Creator notification detected
+I/flutter (15929): [Calendar] Creator: Has slotId - can add
+I/flutter (15929): [Calendar] Notification data: {experimentId: qBbKLVJYVuxx9er7vIo2, slotId: AU4x67Nel4H3bWul82Sj, startTime: 2025-09-30T10:00:00.000, endTime: 2025-09-30T11:00:00.000, participantName: miya}
+I/flutter (15929): [Calendar] Experiment type: ScheduleType.reservation
+I/flutter (15929): [Calendar] Is participant notification: null
+I/flutter (15929): [Calendar] Creator notification detected
+I/flutter (15929): [Calendar] Creator: Has slotId - can add
+I/flutter (15929): [Calendar] Notification data: {slotId: C6aPuIhwmLOMhcHmAJoh, startTime: 2025-09-30T09:00:00.000, experimentId: EBbf00qCXamU14oBewgC, endTime: 2025-09-30T11:01:00.000, participantName: miya}
+I/flutter (15929): [Calendar] Experiment type: ScheduleType.reservation
+I/flutter (15929): [Calendar] Is participant notification: null
+I/flutter (15929): [Calendar] Creator notification detected
+I/flutter (15929): [Calendar] Creator: Has slotId - can add
+I/flutter (15929): [AuthWrapper Monitor] User changed: YTvsGX9NpTWeHPTr5QgWtVuO1y12 (emailVerified: true) at 2025-09-24T04:05:58.637762
+I/flutter (15929): [AuthWrapper StreamBuilder] Connection: ConnectionState.active
+I/flutter (15929): [AuthWrapper StreamBuilder] Has data: true
+I/flutter (15929): [AuthWrapper StreamBuilder] User: YTvsGX9NpTWeHPTr5QgWtVuO1y12 (yudai5287@ruri.waseda.jp)
+I/flutter (15929): [AuthWrapper] User logged in: YTvsGX9NpTWeHPTr5QgWtVuO1y12 (Verified: true)
+I/flutter (15929): [Calendar] Notification data: {slotId: ghvknpids4mwDcaR5bHk, experimentId: HSsL1d9qnlguBNqxJEyC, startTime: 2025-09-30T09:00:00.000, endTime: 2025-09-30T09:21:00.000, participantName: miya}
+I/flutter (15929): [Calendar] Experiment type: ScheduleType.reservation
+I/flutter (15929): [Calendar] Is participant notification: null
+I/flutter (15929): [Calendar] Creator notification detected
+I/flutter (15929): [Calendar] Creator: Has slotId - can add
+I/flutter (15929): [AuthWrapper] App lifecycle state changed: AppLifecycleState.inactive
+I/flutter (15929): [AuthWrapper] App lifecycle state changed: AppLifecycleState.resumed
+I/flutter (15929): [AuthWrapper] App resumed - current user: YTvsGX9NpTWeHPTr5QgWtVuO1y12
+I/flutter (15929): [Calendar] Notification data: {slotId: ghvknpids4mwDcaR5bHk, experimentId: HSsL1d9qnlguBNqxJEyC, startTime: 2025-09-30T09:00:00.000, endTime: 2025-09-30T09:21:00.000, participantName: miya}
+I/flutter (15929): [Calendar] Experiment type: ScheduleType.reservation
+I/flutter (15929): [Calendar] Is participant notification: null
+I/flutter (15929): [Calendar] Creator notification detected
+I/flutter (15929): [Calendar] Creator: Has slotId - can add
+I/flutter (15929): [AuthWrapper] App lifecycle state changed: AppLifecycleState.inactive
+I/flutter (15929): [AuthWrapper] App lifecycle state changed: AppLifecycleState.resumed
+I/flutter (15929): [AuthWrapper] App resumed - current user: YTvsGX9NpTWeHPTr5QgWtVuO1y12
+I/flutter (15929): [Calendar] Notification data: {slotId: ghvknpids4mwDcaR5bHk, experimentId: HSsL1d9qnlguBNqxJEyC, startTime: 2025-09-30T09:00:00.000, endTime: 2025-09-30T09:21:00.000, participantName: miya}
+I/flutter (15929): [Calendar] Experiment type: ScheduleType.reservation
+I/flutter (15929): [Calendar] Is participant notification: null
+I/flutter (15929): [Calendar] Creator notification detected
+I/flutter (15929): [Calendar] Creator: Has slotId - can add
+I/flutter (15929): [AuthWrapper] App lifecycle state changed: AppLifecycleState.inactive
+I/flutter (15929): [AuthWrapper] App lifecycle state changed: AppLifecycleState.resumed
+I/flutter (15929): [AuthWrapper] App resumed - current user: YTvsGX9NpTWeHPTr5QgWtVuO1y12
+I/flutter (15929): プラットフォーム: Android
+I/flutter (15929): Saved Google email to Firestore: yudai71015@gmail.com
+I/flutter (15929): ===== Google Forms Creation Debug Info =====
+I/flutter (15929): Firebase Auth Email: yudai5287@ruri.waseda.jp
+I/flutter (15929): Google Account Email (linked): yudai71015@gmail.com
+I/flutter (15929): Account Index: 1
+I/flutter (15929): =============================================
+I/flutter (15929): Firebase Functions呼び出し (試行 1/3)
+I/flutter (15929): ===== Form Creation Result =====
+I/flutter (15929): Form ID: 1ruSElJN0eE9ZryPd-8abqwowiYOxCfQluk-SUsS7uyY
+I/flutter (15929): Shared with (primary): yudai71015@gmail.com
+I/flutter (15929): Editor added: false
+I/flutter (15929): Editors successfully added: []
+I/flutter (15929): Editors failed: []
+I/flutter (15929): Sharing mode: unknown
+I/flutter (15929): Direct Edit URL: https://docs.google.com/forms/d/1ruSElJN0eE9ZryPd-8abqwowiYOxCfQluk-SUsS7uyY/edit
+I/flutter (15929): User Edit URL: https://docs.google.com/forms/d/1ruSElJN0eE9ZryPd-8abqwowiYOxCfQluk-SUsS7uyY/edit
+I/flutter (15929): Form URL: https://docs.google.com/forms/d/e/1FAIpQLSd6vClTFlgbl_5kop8-sAH4W2dJ1Kq-JTUzrxVHRpmYgpgszA/viewform
+I/flutter (15929): Opening URL: https://docs.google.com/forms/d/1ruSElJN0eE9ZryPd-8abqwowiYOxCfQluk-SUsS7uyY/edit
+I/flutter (15929): ================================
+I/flutter (15929): Form creation message: フォームが作成されました（リンクを知っている全員が編集可能）
+I/flutter (15929): Form opened with editor status: false, sharing mode: unknown
+I/flutter (15929): [AuthWrapper] App lifecycle state changed: AppLifecycleState.inactive
+I/flutter (15929): [AuthWrapper] App lifecycle state changed: AppLifecycleState.hidden
+I/flutter (15929): [AuthWrapper] App lifecycle state changed: AppLifecycleState.paused

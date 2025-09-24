@@ -1,10 +1,13 @@
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/survey_template.dart';
 import '../data/survey_templates.dart';
 import 'package:flutter/services.dart';
 import 'google_account_service.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:io' show Platform;
 
 /// Google Forms関連の機能を提供するサービス
 class GoogleFormsService {
@@ -21,6 +24,9 @@ class GoogleFormsService {
     bool forceAccountSelection = false,
   }) async {
     try {
+      // モバイルプラットフォームでもFirebase Functionsを試す
+      // 以前の即座フォールバックを削除し、エラー時にのみフォールバックする
+      debugPrint('プラットフォーム: ${kIsWeb ? "Web" : (Platform.isIOS ? "iOS" : (Platform.isAndroid ? "Android" : "Other"))}');
       // アカウントサービスを初期化
       await _accountService.initialize();
 
@@ -61,7 +67,39 @@ class GoogleFormsService {
 
       // Firebase Functionsを呼び出し
       final HttpsCallable callable = FirebaseFunctions.instance
-          .httpsCallable('createGoogleFormFromTemplate');
+          .httpsCallable('createGoogleFormFromTemplate',
+            options: HttpsCallableOptions(
+              timeout: const Duration(seconds: 90), // タイムアウトを90秒に延長（リトライを考慮）
+            ),
+          );
+
+      // GoogleアカウントのメールアドレスをFirestoreに保存
+      if (_accountService.currentEmail != null) {
+        try {
+          final user = firebase_auth.FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .set({
+              'googleEmail': _accountService.currentEmail,
+              'googleEmailUpdatedAt': FieldValue.serverTimestamp(),
+            }, SetOptions(merge: true)); // updateではなくsetWithMergeを使用
+
+            debugPrint('Saved Google email to Firestore: ${_accountService.currentEmail}');
+          }
+        } catch (e) {
+          debugPrint('Failed to save Google email to Firestore: $e');
+        }
+      }
+
+      // デバッグ情報を出力
+      final firebaseUser = firebase_auth.FirebaseAuth.instance.currentUser;
+      debugPrint('===== Google Forms Creation Debug Info =====');
+      debugPrint('Firebase Auth Email: ${firebaseUser?.email}');
+      debugPrint('Google Account Email (linked): ${_accountService.currentEmail}');
+      debugPrint('Account Index: ${_accountService.accountIndex}');
+      debugPrint('=============================================');
 
       // テンプレートデータを準備（アカウント情報を含む）
       final templateData = {
@@ -85,26 +123,79 @@ class GoogleFormsService {
         'userEmail': _accountService.currentEmail, // 連携したGoogleアカウントのメールアドレス
       };
 
-      // Functionsを実行
-      final result = await callable.call({
-        'template': templateData,
-        'customTitle': customTitle,
-      });
+      // Functionsを実行（リトライ機構付き）
+      HttpsCallableResult? result;
+      int retryCount = 0;
+      const maxRetries = 2;
+
+      while (retryCount <= maxRetries) {
+        try {
+          debugPrint('Firebase Functions呼び出し (試行 ${retryCount + 1}/${maxRetries + 1})');
+          result = await callable.call({
+            'template': templateData,
+            'customTitle': customTitle,
+          });
+          break; // 成功した場合はループを抜ける
+        } on FirebaseFunctionsException catch (e) {
+          debugPrint('試行 ${retryCount + 1} 失敗: ${e.code} - ${e.message}');
+
+          if (retryCount >= maxRetries) {
+            rethrow; // 最後の試行の場合は例外を再スロー
+          }
+
+          retryCount++;
+          // 指数バックオフで待機
+          await Future.delayed(Duration(seconds: retryCount * 2));
+        }
+      }
+
+      if (result == null) {
+        throw Exception('Firebase Functionsの呼び出しに失敗しました');
+      }
 
       final data = result.data as Map<String, dynamic>;
 
-      if (data['success'] == true && data['formUrl'] != null) {
-        // 作成されたフォームを開く（アカウント指定付きURL）
-        final formUrlWithAccount = _accountService.generateFormsUrl(
-          baseUrl: data['formUrl'],
-          params: {},
-        );
-        final formUrl = Uri.parse(formUrlWithAccount);
-        if (await canLaunchUrl(formUrl)) {
-          await launchUrl(
-            formUrl,
-            mode: LaunchMode.externalApplication,
-          );
+      if (data['success'] == true) {
+        // 編集URLを優先的に使用
+        final urlToOpen = data['editUrl'] ?? data['formUrl'];
+        if (urlToOpen != null) {
+          // 編集権限が付与されているかチェック
+          final editorAdded = data['editorAdded'] ?? false;
+          final editorsAdded = data['editorsAdded'] ?? [];
+          final editorsFailed = data['editorsFailed'] ?? [];
+          final sharingMode = data['sharingMode'] ?? 'unknown';
+          final sharedWith = data['sharedWith'] ?? '';
+
+          // 詳細なログ出力
+          debugPrint('===== Form Creation Result =====');
+          debugPrint('Form ID: ${data['formId']}');
+          debugPrint('Shared with (primary): $sharedWith');
+          debugPrint('Editor added: $editorAdded');
+          debugPrint('Editors successfully added: $editorsAdded');
+          debugPrint('Editors failed: $editorsFailed');
+          debugPrint('Sharing mode: $sharingMode');
+          debugPrint('Direct Edit URL: ${data['directEditUrl']}');
+          debugPrint('User Edit URL: ${data['editUrl']}');
+          debugPrint('Form URL: ${data['formUrl']}');
+          debugPrint('Opening URL: $urlToOpen');
+          debugPrint('================================');
+
+          // メッセージを表示
+          if (data['message'] != null) {
+            debugPrint('Form creation message: ${data['message']}');
+          }
+
+          // URLを開く
+          final formUrl = Uri.parse(urlToOpen);
+          if (await canLaunchUrl(formUrl)) {
+            await launchUrl(
+              formUrl,
+              mode: LaunchMode.externalApplication,
+            );
+          }
+
+          // 編集権限の状態をログに記録
+          debugPrint('Form opened with editor status: $editorAdded, sharing mode: $sharingMode');
         }
         return data;
       }
@@ -112,6 +203,36 @@ class GoogleFormsService {
       return null;
     } on FirebaseFunctionsException catch (e) {
       debugPrint('Firebase Functions エラー: ${e.message}');
+      debugPrint('エラーコード: ${e.code}');
+      debugPrint('詳細: ${e.details}');
+      debugPrint('プラットフォーム: ${kIsWeb ? "Web" : Platform.operatingSystem}');
+
+      // モバイルプラットフォームでの特定エラーの場合は手動作成にフォールバック
+      final isMobileError = !kIsWeb && (Platform.isIOS || Platform.isAndroid) &&
+          (e.code == 'internal' ||
+           e.code == 'unavailable' ||
+           e.code == 'deadline-exceeded' ||
+           e.message?.contains('not supported') == true ||
+           e.message?.contains('CORS') == true);
+
+      if (isMobileError) {
+        debugPrint('モバイルプラットフォームでのFirebase Functionsエラー。手動作成にフォールバックします。');
+        // 手動でGoogleフォームを開く
+        final success = await openGoogleFormWithTemplate(template);
+        if (success) {
+          onError?.call(
+            '自動フォーム作成機能が一時的に利用できません。\n'
+            'Googleフォームが開きましたので、手動でアンケートを作成してください。\n'
+            'テンプレートの内容はクリップボードにコピーされています。',
+            false
+          );
+          return {
+            'success': true,
+            'fallback': true,
+            'message': '手動作成モードで開きました',
+          };
+        }
+      }
 
       // 権限エラーの場合は特別な処理
       if (e.code == 'permission-denied' || e.message?.contains('permission') == true) {
@@ -137,6 +258,23 @@ class GoogleFormsService {
       };
     } catch (e) {
       debugPrint('フォーム作成エラー: $e');
+
+      // 一般的なエラーの場合も手動作成にフォールバック
+      final success = await openGoogleFormWithTemplate(template);
+      if (success) {
+        onError?.call(
+          'フォーム作成中にエラーが発生しました。\n'
+          'Googleフォームが開きましたので、手動でアンケートを作成してください。\n'
+          'テンプレートの内容はクリップボードにコピーされています。',
+          false
+        );
+        return {
+          'success': true,
+          'fallback': true,
+          'message': '手動作成モードで開きました',
+        };
+      }
+
       return {
         'success': false,
         'error': e.toString(),
