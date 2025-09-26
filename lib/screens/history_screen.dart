@@ -206,32 +206,32 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
 
   Widget _buildParticipatedExperimentsTab() {
     final scheduledExperiments = <Experiment>[];
-    final waitingEvaluationExperiments = <Experiment>[];
+    final waitingOthersEvaluationExperiments = <Experiment>[];
+    final unevaluatedExperiments = <Experiment>[];
     final completedExperiments = <Experiment>[];
 
     for (final experiment in _participatedExperiments) {
       final userId = _currentUser?.uid ?? '';
 
-      // 相互評価が完了している場合は完了済み
-      if (experiment.isCompletedForParticipant(userId)) {
-        completedExperiments.add(experiment);
-      }
-      // 評価待ちの場合
-      else if (experiment.isWaitingForEvaluation(userId)) {
-        waitingEvaluationExperiments.add(experiment);
-      }
-      // 将来の実験の場合
-      else if (experiment.isScheduledFuture(userId)) {
+      // 実施日時前の実験
+      if (experiment.isScheduledFuture(userId)) {
         scheduledExperiments.add(experiment);
       }
-      // その他（既に自分だけ評価済みなど）
+      // 相互評価が完了している場合は完了済み
+      else if (experiment.isCompletedForParticipant(userId)) {
+        completedExperiments.add(experiment);
+      }
+      // 自分は評価済みだが相手の評価待ち
+      else if (experiment.isWaitingOthersEvaluation(userId)) {
+        waitingOthersEvaluationExperiments.add(experiment);
+      }
+      // 評価可能だが未評価
+      else if (experiment.canEvaluateButNotYet(userId)) {
+        unevaluatedExperiments.add(experiment);
+      }
+      // その他の場合（評価不可の残り）
       else {
-        // 自分が既に評価済みの場合は評価待ち扱い（相手の評価待ち）
-        if (experiment.hasEvaluated(userId)) {
-          waitingEvaluationExperiments.add(experiment);
-        } else {
-          scheduledExperiments.add(experiment);
-        }
+        completedExperiments.add(experiment);
       }
     }
     
@@ -261,7 +261,7 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        if (waitingEvaluationExperiments.isNotEmpty) ...[
+        if (unevaluatedExperiments.isNotEmpty) ...[
           Container(
             padding: const EdgeInsets.all(12),
             margin: const EdgeInsets.only(bottom: 16),
@@ -319,10 +319,16 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
           ...scheduledExperiments.map((e) => _buildExperimentCard(e)),
           const SizedBox(height: 16),
         ],
-        
-        if (waitingEvaluationExperiments.isNotEmpty) ...[
-          _buildSectionHeader('評価待ち', Icons.rate_review, Colors.orange),
-          ...waitingEvaluationExperiments.map((e) => _buildExperimentCard(e)),
+
+        if (unevaluatedExperiments.isNotEmpty) ...[
+          _buildSectionHeader('未評価', Icons.rate_review, Colors.red),
+          ...unevaluatedExperiments.map((e) => _buildExperimentCard(e)),
+          const SizedBox(height: 16),
+        ],
+
+        if (waitingOthersEvaluationExperiments.isNotEmpty) ...[
+          _buildSectionHeader('評価待ち', Icons.hourglass_empty, Colors.orange),
+          ...waitingOthersEvaluationExperiments.map((e) => _buildExperimentCard(e)),
           const SizedBox(height: 16),
         ],
         

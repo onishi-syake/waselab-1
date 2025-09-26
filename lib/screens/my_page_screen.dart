@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../services/user_service.dart';
+import '../services/experiment_service.dart';
 import '../models/app_user.dart';
 import '../widgets/custom_circle_avatar.dart';
 import 'login_screen.dart';
@@ -24,6 +25,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
   AppUser? _currentUser;
   bool _isLoading = true;
   bool _isEditing = false;
+
+  // 評価カウント用変数
+  int _waitingOthersEvaluationCount = 0;
+  int _unevaluatedCount = 0;
+  int _scheduledCount = 0;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
@@ -50,11 +56,14 @@ class _MyPageScreenState extends State<MyPageScreen> {
       if (user != null) {
         // scheduledExperimentsフィールドが存在しない場合は初期化
         await _userService.initializeScheduledExperimentsField(user.uid);
-        
+
         // 初期化後、最新のユーザー情報を再取得
         user = await _authService.getCurrentAppUser();
-        
+
         if (user != null) {
+          // 評価カウントを計算
+          await _calculateEvaluationCounts(user.uid);
+
           if (mounted) {
             setState(() {
               _currentUser = user;
@@ -86,6 +95,42 @@ class _MyPageScreenState extends State<MyPageScreen> {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  /// 評価カウントを計算
+  Future<void> _calculateEvaluationCounts(String userId) async {
+    try {
+      // ExperimentServiceをインポートしていないので追加
+      final experimentService = ExperimentService();
+      final experiments = await experimentService.getUserParticipatedExperiments(userId);
+
+      int waitingOthers = 0;
+      int unevaluated = 0;
+      int scheduled = 0;
+
+      for (final experiment in experiments) {
+        if (experiment.isScheduledFuture(userId)) {
+          // 実施日時前の実験
+          scheduled++;
+        } else if (experiment.isWaitingOthersEvaluation(userId)) {
+          // 自分は評価済みだが相手の評価待ち
+          waitingOthers++;
+        } else if (experiment.canEvaluateButNotYet(userId)) {
+          // 評価可能だが未評価
+          unevaluated++;
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _waitingOthersEvaluationCount = waitingOthers;
+          _unevaluatedCount = unevaluated;
+          _scheduledCount = scheduled;
+        });
+      }
+    } catch (e) {
+      // エラー時はカウントを0のまま
     }
   }
 
@@ -442,40 +487,69 @@ class _MyPageScreenState extends State<MyPageScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Row(
+                        Column(
                           children: [
-                            Expanded(
-                              child: _buildActivityCard(
-                                icon: Icons.hourglass_empty,
-                                title: '評価待ち',
-                                count: 0,
-                                color: Colors.orange,
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const HistoryScreen(),
-                                    ),
-                                  );
-                                },
-                              ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildActivityCard(
+                                    icon: Icons.hourglass_empty,
+                                    title: '評価待ち',
+                                    count: _waitingOthersEvaluationCount,
+                                    color: Colors.orange,
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const HistoryScreen(),
+                                        ),
+                                      ).then((_) => _loadUserData());
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: _buildActivityCard(
+                                    icon: Icons.science,
+                                    title: '参加予定',
+                                    count: _scheduledCount,
+                                    color: Colors.blue,
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const HistoryScreen(),
+                                        ),
+                                      ).then((_) => _loadUserData());
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _buildActivityCard(
-                                icon: Icons.science,
-                                title: '参加予定',
-                                count: _currentUser?.scheduledExperiments ?? 0,
-                                color: Colors.blue,
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const HistoryScreen(),
-                                    ),
-                                  );
-                                },
-                              ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildActivityCard(
+                                    icon: Icons.rate_review,
+                                    title: '未評価',
+                                    count: _unevaluatedCount,
+                                    color: Colors.red,
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const HistoryScreen(),
+                                        ),
+                                      ).then((_) => _loadUserData());
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Container(), // プレースホルダー
+                                ),
+                              ],
                             ),
                           ],
                         ),

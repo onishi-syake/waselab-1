@@ -274,17 +274,17 @@ class Experiment {
     if (!(creatorId == userId || participants.contains(userId))) {
       return false;
     }
-    
+
     // 既に評価済みの場合は評価不可
     if (hasEvaluated(userId)) {
       return false;
     }
-    
+
     // アンケート型は日時制限なし
     if (type == ExperimentType.survey) {
       return true;
     }
-    
+
     // 固定日時の実験の場合
     if (fixedExperimentDate != null) {
       // 実施日時を過ぎているかチェック
@@ -312,7 +312,16 @@ class Experiment {
       );
       return DateTime.now().isAfter(endOfDay);
     }
-    
+
+    // 予約制の実験で参加者の個別スケジュールがある場合
+    if (scheduleType == ScheduleType.reservation && participants.contains(userId) && participantEvaluations != null) {
+      final participantInfo = participantEvaluations![userId];
+      if (participantInfo != null && participantInfo['scheduledDate'] != null) {
+        final scheduledDate = (participantInfo['scheduledDate'] as Timestamp).toDate();
+        return DateTime.now().isAfter(scheduledDate);
+      }
+    }
+
     // 柔軟な日程調整の実験で参加者の場合
     if (allowFlexibleSchedule && participants.contains(userId) && participantEvaluations != null) {
       final participantInfo = participantEvaluations![userId];
@@ -321,7 +330,12 @@ class Experiment {
         return DateTime.now().isAfter(scheduledDate);
       }
     }
-    
+
+    // 実験期間が設定されている場合は、実験開始日以降のみ評価可能
+    if (experimentPeriodStart != null) {
+      return DateTime.now().isAfter(experimentPeriodStart!);
+    }
+
     // その他の場合（日時指定なしの実験など）は評価可能
     return true;
   }
@@ -463,5 +477,23 @@ class Experiment {
     }
 
     return false;
+  }
+
+  /// 自分は評価済みだが相手の評価待ちかどうかをチェック（新仕様）
+  bool isWaitingOthersEvaluation(String userId) {
+    // 参加者の場合のみチェック
+    if (!participants.contains(userId)) return false;
+
+    // 自分が既に評価済みでないと評価待ちではない
+    if (!hasEvaluated(userId)) return false;
+
+    // 相互評価が完了していない場合は相手の評価待ち
+    return !isMutuallyCompletedWithUser(userId);
+  }
+
+  /// 評価可能だが未評価かどうかをチェック（新仕様）
+  bool canEvaluateButNotYet(String userId) {
+    // 評価可能で、かつまだ評価していない
+    return canEvaluate(userId) && !hasEvaluated(userId);
   }
 }

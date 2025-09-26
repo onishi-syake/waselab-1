@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>788143974236-5m4bv0dspcbl2bquevs6ssgh088413rh.apps.googleusercontent.com</string>
+	<string>788143974236-cu3n32bb3bktice5apfs7dm9lltj1nqt.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.788143974236-5m4bv0dspcbl2bquevs6ssgh088413rh</string>
+	<string>com.googleusercontent.apps.788143974236-cu3n32bb3bktice5apfs7dm9lltj1nqt</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>788143974236-6caopbt5bouttf0iroftapv8t0o426a2.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.yudaimiyamoto.experimentCooperationApp</string>
+	<string>com.kosukeonishi.experimentCooperationApp</string>
 	<key>PROJECT_ID</key>
 	<string>waselab-30308</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:788143974236:ios:9859b91f3880f3df000399</string>
+	<string>1:788143974236:ios:c4707e84c5b6c093000399</string>
 </dict>
 </plist>
