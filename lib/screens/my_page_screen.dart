@@ -487,69 +487,57 @@ class _MyPageScreenState extends State<MyPageScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Column(
+                        Row(
                           children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _buildActivityCard(
-                                    icon: Icons.hourglass_empty,
-                                    title: '評価待ち',
-                                    count: _waitingOthersEvaluationCount,
-                                    color: Colors.orange,
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => const HistoryScreen(),
-                                        ),
-                                      ).then((_) => _loadUserData());
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: _buildActivityCard(
-                                    icon: Icons.science,
-                                    title: '参加予定',
-                                    count: _scheduledCount,
-                                    color: Colors.blue,
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => const HistoryScreen(),
-                                        ),
-                                      ).then((_) => _loadUserData());
-                                    },
-                                  ),
-                                ),
-                              ],
+                            Expanded(
+                              child: _buildCompactActivityCard(
+                                icon: Icons.hourglass_empty,
+                                title: '評価待ち',
+                                count: _waitingOthersEvaluationCount,
+                                color: Colors.orange,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const HistoryScreen(),
+                                    ),
+                                  ).then((_) => _loadUserData());
+                                },
+                              ),
                             ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _buildActivityCard(
-                                    icon: Icons.rate_review,
-                                    title: '未評価',
-                                    count: _unevaluatedCount,
-                                    color: Colors.red,
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => const HistoryScreen(),
-                                        ),
-                                      ).then((_) => _loadUserData());
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Container(), // プレースホルダー
-                                ),
-                              ],
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: _buildCompactActivityCard(
+                                icon: Icons.rate_review,
+                                title: '未評価',
+                                count: _unevaluatedCount,
+                                color: Colors.red,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const HistoryScreen(),
+                                    ),
+                                  ).then((_) => _loadUserData());
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: _buildCompactActivityCard(
+                                icon: Icons.science,
+                                title: '参加予定',
+                                count: _scheduledCount,
+                                color: Colors.blue,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const HistoryScreen(),
+                                    ),
+                                  ).then((_) => _loadUserData());
+                                },
+                              ),
                             ),
                           ],
                         ),
@@ -1017,6 +1005,63 @@ class _MyPageScreenState extends State<MyPageScreen> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompactActivityCard({
+    required IconData icon,
+    required String title,
+    required int count,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: color.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 16,
+                  color: color,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  count.toString(),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 2),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
                 color: color,
               ),
             ),
