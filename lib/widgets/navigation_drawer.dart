@@ -228,7 +228,7 @@ class NavigationDrawerWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '© 2024 WaseLab Team',
+                  '© 2025 WaseLab Team',
                   style: TextStyle(
                     fontSize: 10,
                     color: Colors.grey[500],

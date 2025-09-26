@@ -11,7 +11,7 @@ class AppConstants {
   static const String githubSponsorsUrl = 'https://github.com/sponsors/Miyamoto-yudai';
   
   // 開発依頼フォーム
-  static const String developmentRequestFormUrl = 'https://forms.gle/example123';  // 仮のURL
+  static const String developmentRequestFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScMS4m4J9B28i3bLHgFVxAJlirgmDZ7Pyi3smQwpyJM1d4JbQ/viewform?usp=header';
   
   // サポート情報
   static const String supportEmail = 'support@waselab.example.com';  // 仮のメールアドレス

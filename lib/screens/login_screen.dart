@@ -661,7 +661,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         ),
                         child: Text(
-                          '© 2024 WaseLab Team',
+                          '© 2025 WaseLab Team',
                           style: TextStyle(
                             fontSize: 10,
                             color: Colors.grey[400],

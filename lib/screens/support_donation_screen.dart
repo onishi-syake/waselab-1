@@ -805,7 +805,7 @@ class SupportDonationScreen extends StatelessWidget {
                   const Divider(),
                   const SizedBox(height: 12),
                   Text(
-                    '© 2024 ${AppConstants.teamName}',
+                    '© 2025 ${AppConstants.teamName}',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],
