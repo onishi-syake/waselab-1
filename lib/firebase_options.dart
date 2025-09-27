@@ -58,7 +58,7 @@ class DefaultFirebaseOptions {
     appId: '1:788143974236:ios:9859b91f3880f3df000399',
     messagingSenderId: '788143974236',
     projectId: 'waselab-30308',
-    iosBundleId: 'com.yudaimiyamoto.experimentCooperationApp',
+    iosBundleId: 'com.kosukeonishi.experimentCooperationApp',
     storageBucket: 'waselab-30308.firebasestorage.app',
     iosClientId: '788143974236-5m4bv0dspcbl2bquevs6ssgh088413rh.apps.googleusercontent.com',
   );
@@ -69,7 +69,7 @@ class DefaultFirebaseOptions {
     appId: '1:788143974236:ios:9859b91f3880f3df000399',
     messagingSenderId: '788143974236',
     projectId: 'waselab-30308',
-    iosBundleId: 'com.yudaimiyamoto.experimentCooperationApp',
+    iosBundleId: 'com.kosukeonishi.experimentCooperationApp',
     storageBucket: 'waselab-30308.firebasestorage.app',
     iosClientId: '788143974236-5m4bv0dspcbl2bquevs6ssgh088413rh.apps.googleusercontent.com',
   );
